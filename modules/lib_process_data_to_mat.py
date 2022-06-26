@@ -235,11 +235,11 @@ def get_excel_data(exp, eth_file):
 '''for debugging'''
 
 if __name__ == '__main__': 
-    f = TrialData()
-    # f = get_excel_data('2019-09-06', 100)
-    # params.set_target('2019-09-06', 'SW', '1')
+
+    # f = get_excel_data('2019-12-11', 97)
+    params.set_reverse_target('2019-12-11', 'SE', 'Reversal')
     
-    f.Load('2019-09-06', 12, 'R180 4')
+    # f.Load('2019-09-06', 12, 'R180 4')
     pass
 
 

@@ -37,11 +37,13 @@ Rotating & Static Entrances
 # ls.plot_latency(rotate, log=True, savefig = False)
 # ls.plot_distance(rotate, log=True, savefig = False)
 # ls.plot_speed(rotate, savefig = False)
+# calc.curve_pValue(rotate)
 
 static = calc.iterate_all_trials(['2019-09-06','2019-10-07'], continuous= False)
 ls.plot_latency(static, log=True, savefig = False)
 ls.plot_distance(static, log=True, savefig = False)
 ls.plot_speed(static, savefig = False)
+calc.curve_pValue(static)
 
 '''
 3 Local Cues
@@ -50,3 +52,4 @@ ls.plot_speed(static, savefig = False)
 # ls.plot_latency(loc, log=True, savefig = False)
 # ls.plot_distance(loc, log=True, savefig = False)
 # ls.plot_speed(loc, savefig = False)
+# calc.curve_pValue(loc)

@@ -98,7 +98,7 @@ def set_target(experiment, entrance, trial_condition):
             if entrance == u'NW':
                 target_coords = 11.07, -30.48
         elif trial_condition.startswith(u'Explore') or trial_condition.startswith(u'Training'): target_coords = float("NaN")
-    elif experiment == '2019-12-11': target_coords = 2.88, 27.45
+    elif experiment == '2019-12-11': target_coords = -4.32, 27.40
     elif experiment == '2021-03-08' or experiment == '2021-05-06' or experiment == '2021-05-26': target_coords = 24.47, 21.80
     elif experiment == '2021-06-22':
         if trial_condition.isdigit() is True and int(trial_condition) <= 18:
@@ -149,10 +149,9 @@ def set_target(experiment, entrance, trial_condition):
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
 def set_reverse_target(experiment, entrance, trial_condition):
-
     if experiment == '2019-05-23':
         reverse_target_coords = -6.32, 36.62
-    elif experiment == '2019-09-06' or '2019-10-07' or '2019-07-08':
+    elif experiment == '2019-09-06' or experiment == '2019-10-07' or experiment == '2019-07-08':
         if trial_condition.isdigit() is True:
             if entrance == u'SW':
                 reverse_target_coords = 11.07, -30.48
@@ -189,7 +188,7 @@ def set_reverse_target(experiment, entrance, trial_condition):
                 reverse_target_coords = 2.88, 27.45
             if entrance == u'NW':
                 reverse_target_coords = -21.68, -5.61
-    elif experiment == '2019-12-11': reverse_target_coords = 11.07, -30.48
+    elif experiment == '2019-12-11': reverse_target_coords = 38.89, -0.51
     elif experiment == '2021-03-08' or experiment == '2021-05-06' or experiment == '2021-05-26': reverse_target_coords = -19.61, -16.63
     if experiment == '2021-06-22':
         if entrance == u'SW':
@@ -200,7 +199,7 @@ def set_reverse_target(experiment, entrance, trial_condition):
             reverse_target_coords = 37.54, 13.19
         if entrance == u'NW':
             reverse_target_coords = -13.19, 39.27
-    elif experiment == '2021-07-16' : reverse_target_coords = 27.33, 4.4
+    elif experiment == '2021-07-16': reverse_target_coords = 27.33, 4.4
     elif experiment == '2021-07-30': reverse_target_coords = 6.75, -26.23
     elif experiment == '2021-08-11': reverse_target_coords = -29.21, -3.77
     elif experiment == '2021-09-23': reverse_target_coords = -18.90, 22.52

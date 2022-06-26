@@ -10,6 +10,7 @@ import numpy as np
 import glob
 import os
 import pandas as pd
+import scipy.stats as stats
 from modules import lib_process_data_to_mat as plib
 import modules.lib_plot_mouse_trajectory as pltlib
 from modules.config import PROCESSED_FILE_DIR
@@ -90,6 +91,28 @@ def iterate_all_trials(experiment, continuous = False, show_load = True):
     
     return {'Latency': latency.sort_index(axis=0), 'Distance': distance.sort_index(axis=0),'Speed': speed.sort_index(axis=0)}  #sorts trials into the correct order and saves as combined dict
 
+
+def curve_pValue(data):
+    
+    def early_late_ttest(stat_data):
+        early = [x for xs in stat_data.iloc[1:4,:].values.tolist() for x in xs] #get trials 2-4
+        late = [x for xs in stat_data.tail(3).values.tolist() for x in xs] #get last 3 trials
+        t_test = stats.ttest_rel(early, late, nan_policy = 'omit') #Calculate the t-test on TWO RELATED samples of scores
+        return t_test
+    
+    pValues = []
+    for l in data:
+        p = early_late_ttest(data[l])[1]
+        pValues.append(p)
+        if p < 0.05:
+            print('%s is significant at p = %s'%(l, round(p, 6)))
+        else:
+            print('%s is NOT significant at p = %s'%(l, round(p, 6)))
+    # pValues = early_late_ttest(latency)[1], early_late_ttest(distance)[1], early_late_ttest(speed)[1]
+    
+    return pValues
+
+
 #%%
 '''
 Calculate Search bias during probe
@@ -131,12 +154,14 @@ def calc_search_bias(experiment, time_limit = '2min'):
 
 if __name__ == '__main__':
     # exp_data = iterate_all_trials('2021-07-16')
-    d = plib.TrialData()
-    d.Load('2021-07-16', '*', 'Probe')
+    # d = plib.TrialData()
+    # d.Load('2021-07-16', '*', 'Probe')
+    
+    pValues = curve_pValue(loc)
     
     # test = compare_target_dwell(d, '2min')
     
-    test2 = calc_search_bias(d.exp, '2min')
+    # test2 = calc_search_bias(d.exp, '2min')
     
     # t1, coords = calc_time_in_area(d.target, d.r_nose, 3000, 15.)
     # d.r_nose = d.r_nose[idx]
