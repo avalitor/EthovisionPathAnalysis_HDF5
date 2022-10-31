@@ -93,7 +93,7 @@ def make_heatmap(x, y, s, bins=1000):
 Plotting Functions
 '''
 
-def plot_single_traj(trialclass, cropcoords = True, returnpath = False, savefig = False):
+def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, crop_interval = False, returnpath = False, continuous = False, savefig = False):
     '''
     Plots r_nose coordinates on an image based on data in the class TrialData
     
@@ -103,8 +103,14 @@ def plot_single_traj(trialclass, cropcoords = True, returnpath = False, savefig 
         Object class that contains all trial info
     cropcoords: bool, optional
         crops the trajectory when the mouse reaches the target
+    crop_end_custom: bool or tuple, optional
+        crops the trajectory at a custom coordinate
+    crop_interval: bool or array of two tuples, optional
+        crops the trajectory between two coordinates
     returnpath : bool, optional
         Plot the return path from the target. The default is False.
+    continuous : bool, optional
+        Plots the last continuous trajectory to target
     savefig : book, optional
         Saves the figure. The default is False.
     '''
@@ -115,12 +121,35 @@ def plot_single_traj(trialclass, cropcoords = True, returnpath = False, savefig 
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
     ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
     
-    if cropcoords == True:
+    if cropcoords == True and isinstance(crop_end_custom, bool) and isinstance(crop_interval, bool): #if we want to crop at target and not at custom location or interval
         #get target index
         index = coords_to_target(trialclass.r_nose, trialclass.target)
+        
+        #gets starting index if plotting continuous trajectory
+        if continuous == True: idx_start = continuous_coords_to_target(trialclass, index)
+        else: idx_start = 0
+            
         #plot path to target
+        ax.plot(trialclass.r_nose[idx_start:index+1,0], trialclass.r_nose[idx_start:index+1,1], ls='-', color = 'k')
+    elif isinstance(crop_end_custom, bool) == False: #checks if we want to crop at specific coordinate
+        #get target index
+        index = coords_to_target(trialclass.r_nose, crop_end_custom)
+        
+        # #if cropcoords is also true, crops at whichever one comes first
+        # if cropcoords == True: 
+        #     index2 = coords_to_target(trialclass.r_nose, trialclass.target)
+        #     if index2 <= index: index = index2
+                
+        #plot path to custom target
         ax.plot(trialclass.r_nose[:index+1,0], trialclass.r_nose[:index+1,1], ls='-', color = 'k')
         
+    elif isinstance(crop_interval, bool) == False: #check if we want to crop trajectory between two points
+        #get start and end index
+        idx_start = coords_to_target(trialclass.r_nose, crop_interval[0])
+        idx_end = coords_to_target(trialclass.r_nose, crop_interval[1])
+        #plot path between coordinates
+        ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = 'k')
+            
     else: 
         ax.plot(trialclass.r_nose[:,0], trialclass.r_nose[:,1], ls='-', color = 'k')
     #plot return path
@@ -149,7 +178,7 @@ def plot_single_traj(trialclass, cropcoords = True, returnpath = False, savefig 
         
     plt.show()
     
-def plot_multi_traj(trialclass_list, savefig = False):
+def plot_multi_traj(trialclass_list, crop_rev = False, savefig = False):
     '''
     Plots multiple trajectories on a single image
     If the targets rotate with the entrances, automatically align the trajectories so the targets are the same
@@ -158,6 +187,8 @@ def plot_multi_traj(trialclass_list, savefig = False):
     ----------
     trialclass_list : list
         List of class TrialData
+    crop_rev: bool, optional
+        crops trajectory at reverse target, if it exists
     savefig : bool, optional
         Save this figure as a png image. The default is False.
     '''
@@ -182,8 +213,12 @@ def plot_multi_traj(trialclass_list, savefig = False):
     # linestyles = iter(['-', '--', ':'])
     for t in trialclass_list:
         if len(t.time)>0: #checks to see if list data is not empty
-            #get target index
-            index = coords_to_target(t.r_nose, t.target)
+            
+            if crop_rev == True:
+                try : index = coords_to_target(t.r_nose, t.target_reverse)
+                except:index = coords_to_target(t.r_nose, t.target)
+            else: index = coords_to_target(t.r_nose, t.target)
+
             #plot path to target
             try: ax.plot(t.r_nose_r[:index+1,0], t.r_nose_r[:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
             except: ax.plot(t.r_nose[:index+1,0], t.r_nose[:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
@@ -289,17 +324,98 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
             plt.savefig(ROOT_DIR+'/figures/Heatmap_%s_M%s_%s.png'%(first_trial.protocol_name, first_trial.mouse_number, first_trial.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
      
     plt.show()
+    
+    
+def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = False, crop_interval = False, returnpath = False, continuous = False, savefig = False):
+    '''
+    Plots r_nose coordinates on an image based on data in the class TrialData
+    
+    Parameters
+    ----------
+    trialclass : class
+        Object class that contains all trial info
+    cropcoords: bool, optional
+        crops the trajectory when the mouse reaches the target
+    crop_end_custom: bool or tuple, optional
+        crops the trajectory at a custom coordinate
+    crop_interval: bool or array of two tuples, optional
+        crops the trajectory between two coordinates
+    returnpath : bool, optional
+        Plot the return path from the target. The default is False.
+    continuous : bool, optional
+        Plots the last continuous trajectory to target
+    savefig : book, optional
+        Saves the figure. The default is False.
+    '''
+
+    fig, ax = plt.subplots()
+
+    #import image
+    img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
+    ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
+    
+    if cropcoords == True and isinstance(crop_end_custom, bool) and isinstance(crop_interval, bool): #if we want to crop at target and not at custom location or interval
+        #get target index
+        index = coords_to_target(trialclass.r_nose, trialclass.target)
+        
+        #gets starting index if plotting continuous trajectory
+        if continuous == True: idx_start = continuous_coords_to_target(trialclass, index)
+        else: idx_start = 0
+            
+        #plot path to target
+        ax.plot(trialclass.r_nose[idx_start:index+1,0], trialclass.r_nose[idx_start:index+1,1], ls='-', color = 'k')
+    elif isinstance(crop_end_custom, bool) == False: #checks if we want to crop at specific coordinate
+        #get target index
+        index = coords_to_target(trialclass.r_nose, crop_end_custom)
+        #plot path to target
+        ax.plot(trialclass.r_nose[:index+1,0], trialclass.r_nose[:index+1,1], ls='-', color = 'k')
+    elif isinstance(crop_interval, bool) == False: #check if we want to crop trajectory between two points
+        #get start and end index
+        idx_start = coords_to_target(trialclass.r_nose, crop_interval[0])
+        idx_end = coords_to_target(trialclass.r_nose, crop_interval[1])
+        #plot path between coordinates
+        ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = 'k')
+            
+    else: 
+        ax.plot(trialclass.r_nose[:,0], trialclass.r_nose[:,1], ls='-', color = 'k')
+    #plot return path
+    if returnpath == True:
+        ax.plot(trialclass.r_nose[index:,0], trialclass.r_nose[index:,1], ls='-', color = '#717171')
+
+    #plot path with colours
+#        N = np.linspace(0, 10, np.size(y))
+#        ax.scatter(x, y, s=1.5, c = N, cmap=cm.jet_r, edgecolor='none')
+
+    #annotate image
+    target = plt.Circle((trialclass.target), 2.5, color='b')
+    ax.add_artist(target)
+    
+    test2 = (0.5129473857826159, 7.744444169553028)
+
+
+    x = np.arange(-150, 150)
+    ax.plot(x, test2[0]*x+test2[1], ls='-', color = 'k') #line of symmetry
+    
+    ax.plot(test[:,0], test[:,1])
+    
+    if params.check_reverse(trialclass.exp, trialclass.trial) is True: #annotates false target, optional
+        prev_target = plt.Circle((params.set_reverse_target(trialclass.exp, trialclass.entrance, trialclass.trial)), 2.5, color='r')
+        ax.add_artist(prev_target)
+
+    # plt.style.use('default')
+    # Remove ticks
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    if savefig == True:
+        plt.savefig(ROOT_DIR+'/figures/Plot_%s_M%s_%s.png'%(trialclass.protocol_name, trialclass.mouse_number, trialclass.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
+        
+    plt.show()
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
-    objs = [plib.TrialData() for i in range(8)]
-    objs[0].Load('2021-07-16', 37, 'Probe')
-    objs[1].Load('2021-07-16', 38, 'Probe')
-    objs[2].Load('2021-07-16', 39, 'Probe')
-    objs[3].Load('2021-07-16', 40, 'Probe')
-    objs[4].Load('2021-11-15', 53, 'Probe')
-    objs[5].Load('2021-11-15', 54, 'Probe')
-    objs[6].Load('2021-11-15', 55, 'Probe')
-    objs[7].Load('2021-11-15', 56, 'Probe')
-    
-    plot_heatmap(objs, '2min', False)
+    exp = plib.TrialData()
+    exp.Load('2021-06-22', '36', '20')
+    print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+
+    plot_2_target_analysis(exp, crop_interval=(exp.target_reverse, exp.target))
     pass

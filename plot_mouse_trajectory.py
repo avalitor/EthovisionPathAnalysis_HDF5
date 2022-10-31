@@ -12,22 +12,53 @@ from modules import lib_process_data_to_mat as plib
 from modules import lib_plot_mouse_trajectory as pltlib
 
 
-''' plots a single mouse trajectory '''
-objs = plib.TrialData()
-objs.Load('2019-12-11', '18', 1)
-print('Mouse %s Trial %s'%(objs.mouse_number, objs.trial))
+'''plot single traj'''
+# exp = plib.TrialData()
+# exp.Load('2021-06-22', '36', '20')
+# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-pltlib.plot_single_traj(objs, cropcoords = True)
+# pltlib.plot_single_traj(exp, cropcoords = True)
+
+''' plots a single mouse trajectory, cut off at REL target '''
+# objs = plib.TrialData()
+# objs.Load('2022-08-12', 69, 'Probe2')
+# print('Mouse %s Trial %s'%(objs.mouse_number, objs.trial))
+
+# pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse)
+
+'''plots single trajectory between two points'''
+# exp = plib.TrialData()
+# exp.Load('2021-06-22', '36', '20')
+# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+
+# pltlib.plot_single_traj(exp, crop_interval=(exp.target_reverse, exp.target))
 
 
-'''plots multiple trajectories'''
+'''plots multiple trajectories and REL'''
 # objs = [plib.TrialData() for i in range(2)]
-# objs[0].Load('2019-12-11', 19, '9')
-# objs[1].Load('2019-12-11', 20, '10')
+# objs[0].Load('2019-10-07', 15, '16')
+# objs[1].Load('2019-10-07', 15, 'R180 1')
 
 # print(objs[0].protocol_name)
 
-# pltlib.plot_multi_traj(objs, savefig = False)
+# pltlib.plot_multi_traj(objs, crop_rev = True, savefig = False)
+
+
+'''plot multiple trajectories on different graphs'''
+objs = [plib.TrialData() for i in range(3)]
+# objs[0].Load('2021-11-19', 57, '1')
+# objs[1].Load('2021-11-19', 59, '1')
+# objs[2].Load('2021-11-19', 60, '1')
+# objs[3].Load('2021-11-19', 57, '18')
+# objs[4].Load('2021-11-19', 59, '18')
+# objs[5].Load('2021-11-19', 60, '18')
+objs[0].Load('2021-11-19', 57, 'Probe')
+objs[1].Load('2021-11-19', 59, 'Probe')
+objs[2].Load('2021-11-19', 60, 'Probe')
+
+for i in objs:
+    pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
+    
 
 '''plots heatmap of two experiments'''
 # objs = [plib.TrialData() for i in range(8)]

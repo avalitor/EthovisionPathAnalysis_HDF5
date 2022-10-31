@@ -162,6 +162,8 @@ class TrialData(): #container to store all trial data and metadata
         self.trial=m['trial'][0]
         self.entrance=m['entrance'][0]
         self.target=m['target'][0]
+        if params.check_reverse(self.exp, self.trial) is True:
+            self.target_reverse=m['target_reverse'][0]
         self.time=m['time']
         self.r_nose=m['r_nose']
         self.r_center=m['r_center']
@@ -231,15 +233,51 @@ def get_excel_data(exp, eth_file):
     
     return import_excel(fname, DOCU)
 
+def manual_single_excel_import(path):
+    
+    print('     ... reading experiment excel file %s' %(path))
+    
+    exp = input('Enter exp date')
+    
+    t = TrialData(exp = exp)
+    
+    t.mouse_number = input('Enter mouse number')
+    t.day = input('Enter Day')
+    t.trial = input('Enter Trial')
+    t.entrance = input('Enter entrance')
+    t.protocol_name = input('enter protocol name')
+    t.protocol_description = input('enter protocol description')
+    t.img_extent = input('enter image extent')
+    t.experimenter = input('enter experimenter name')
+    
+    t.bkgd_img = input('enter background image file')
+    t.target = input('enter target coordinates')
+    t.filename = ('hfm_%s_M%s_%s.mat' %(t.exp, t.mouse_number, t.trial))
+    
+    #accomadates version change in ethovision file, change header lengh if experiment was done after 2019
+    nrows_header = 39 #or 37 if before 2019
+    
+    err_msg = ' *** ERROR  :::  %s data not found in ' + os.path.basename(path)
+    
+    #opens trial to get data
+    d = pd.read_excel(path,na_values=['-'],header=0, skiprows = nrows_header)
+    t.time = try_or_default(lambda: d['Recording time'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Recording time' )
+    t.r_nose = try_or_default(lambda: d[['X nose','Y nose']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X nose or Y nose' )
+    t.r_center = try_or_default(lambda: d[['X center','Y center']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X center or Y center' )
+    t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X tail or Y tail' )
+    return t
+
+
 
 '''for debugging'''
 
 if __name__ == '__main__': 
 
-    # f = get_excel_data('2019-12-11', 97)
-    params.set_reverse_target('2019-12-11', 'SE', 'Reversal')
+    # objs = [TrialData() for i in range(2)]
+    # objs[0].Load('2019-09-06', 10, '17')
+    # objs[1].Load('2019-09-06', 10, 'R180 1')
     
-    # f.Load('2019-09-06', 12, 'R180 4')
+    test = manual_single_excel_import(RAW_FILE_DIR + 'Raw data-LED_test-Trial     3.xlsx')
     pass
 
 

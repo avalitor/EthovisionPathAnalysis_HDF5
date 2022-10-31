@@ -57,7 +57,16 @@ def calc_dist_bw_points(coords, pointA, pointB):
     else:
         dist = calc_distance(coords[idx_end:idx_start])
     return dist
-    
+
+#gets trajectory coordinates between two points
+def get_coords_bw_points(coords, pointA, pointB):
+    idx_start = pltlib.coords_to_target(coords, pointA)+1
+    idx_end = pltlib.coords_to_target(coords, pointB)+1
+    if idx_start < idx_end: #checks if first point comes before second point
+        coord_interval = coords[idx_start:idx_end]
+    else:
+        coord_interval = coords[idx_end:idx_start]
+    return coord_interval
 
 #%%
 '''
@@ -151,18 +160,63 @@ def calc_search_bias(experiment, time_limit = '2min'):
             
     return total_dwell
 
+'''
+Calculat spread along symmetry line betwen two points
+'''
+
+
+def axis_of_symm(A, B): #gets axis of symmetry between two points
+    midpoint = ((A[0] + B[0])/2, (A[1] + B[1])/2)
+    theta = np.polyfit(np.array([A[0], B[0]]), np.array([A[1], B[1]]), 1) #gets line between two points
+    slope = (-1/theta[0]) #gets the perpendicular slope
+    b = midpoint[1] - (-1/theta[0]) * midpoint[0] #calculates perpendicular line bewteen points
+    return slope,  b
+
+def get_perp_intersect(point, line): #gets coords where point perpendicularly intersects with line
+    point_m = -1/line[0]
+    point_b = point[1]-(point_m*point[0])
+    
+    x = (point_b - line[1])/(line[0]-point_m)
+    y = line[0]*x + line[1]
+    return x, y
+
+def calc_traj_spread(exp):
+    TargetB = exp.target
+    TargetA = exp.target_reverse
+    symm_line = axis_of_symm(TargetA, TargetB)
+    
+    coord_interval = get_coords_bw_points(exp.r_nose, TargetB, TargetA)
+    
+    # def myfunc(n):
+    #     for i in n:
+    #         yield i #get_perp_intersect(i, symm_line)
+            
+    # moved_points = np.fromiter(myfunc(coord_interval), dtype=float)
+    
+    i = 0
+    moved_points = np.empty([len(coord_interval), 2])
+    while i < len(coord_interval):
+        moved_point = get_perp_intersect(coord_interval[i], symm_line)
+        moved_points[i] = moved_point
+        i = i+1
+        
+    return moved_points
+
+def calc_spread_iterate_exp(experiments, show_load = True):
+    pass
 
 if __name__ == '__main__':
-    # exp_data = iterate_all_trials('2021-07-16')
-    # d = plib.TrialData()
-    # d.Load('2021-07-16', '*', 'Probe')
+    exp = plib.TrialData()
+    exp.Load('2021-06-22', '36', '20')
     
-    pValues = curve_pValue(loc)
+    test = calc_traj_spread(exp)
     
-    # test = compare_target_dwell(d, '2min')
+    # TargetB = exp.target
+    # TargetA = exp.target_reverse
     
-    # test2 = calc_search_bias(d.exp, '2min')
+    # point = [0,0]
     
-    # t1, coords = calc_time_in_area(d.target, d.r_nose, 3000, 15.)
-    # d.r_nose = d.r_nose[idx]
-    # pltlib.plot_single_traj(d, cropcoords=False)
+    # test2 = axis_of_symm(TargetA, TargetB)
+    # result = get_perp_intersect(point, test2)
+    
+    

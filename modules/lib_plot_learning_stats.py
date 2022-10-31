@@ -68,7 +68,7 @@ def smooth_curve(xs, ys):
 Plotting Functions
 '''
 def plot_latency(data, bestfit = False, log = True, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3.5))
     
     x = data['Latency'].index
     y = data['Latency']
@@ -123,7 +123,8 @@ def plot_latency(data, bestfit = False, log = True, savefig = False):
 
 
 def plot_distance(data, bestfit = False, log = True, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3))
+    ax.set_position([0.125, 0.125, 0.72, 0.704])
     
     x = data['Distance'].index
     y = data['Distance']
@@ -261,9 +262,9 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    # static = iterate_all_trials(['2019-09-06','2019-10-07'], continuous= True)
-    plot_latency(rotate, log = True)
-    # plot_distance(static, log = False)
+    static = iterate_all_trials(['2019-09-06','2019-10-07'], continuous= True)
+    # plot_latency(rotate, log = True)
+    plot_distance(static, log = True)
     
     # d = calc_search_bias(['2019-09-06', '2019-10-07'], '2min')
     # plot_percent_bar(d)

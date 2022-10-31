@@ -24,16 +24,17 @@ def check_reverse(experiment, trial_condition): #check if trial is a reversal
     
     if trial_condition.startswith(u'R') == True or trial_condition.startswith(u'Flip') == True: is_reverse = True
     else: is_reverse = False
-    if experiment == '2021-06-22' or experiment == '2021-11-19':
+    if experiment == '2021-06-22' or experiment == '2021-11-19' or experiment == '2022-08-12':
         if trial_condition.startswith(u'Probe') or trial_condition.startswith(u'R'): is_reverse = True
         elif trial_condition.isdigit():
             if int(trial_condition) > 18: is_reverse = True
         else: is_reverse = False
+   
     return is_reverse
 
 #fetches background image
 def set_background_image(experiment, is_reverse):
-    if experiment == '2019-09-06' or experiment == '2019-10-07': background = 'BKGDimage-pilot.png'
+    if experiment == '2019-09-06' or experiment == '2019-10-07' or experiment == '2019-06-18': background = 'BKGDimage-pilot.png'
     if experiment == '2019-12-11': background = 'BKGDimage-localCues.png'
     if experiment == '2021-03-08': background = 'BKGDimage-localCues_clear.png'
     if experiment == '2021-05-06': background = 'BKGDimage-localCues_Letter.png'
@@ -54,6 +55,7 @@ def set_background_image(experiment, is_reverse):
     if experiment == '2022-03-21': 
         if is_reverse: background = 'BKGDimage_asymmRev.png'
         else: background = 'BKGDimage_asymm2.png'
+    if experiment == '2022-08-12': background = 'BKGDimage-220812.png'
     return background
 
 #manually sets food target coordinates based on experiment
@@ -145,6 +147,25 @@ def set_target(experiment, entrance, trial_condition):
                 target_coords = 18.38, -21.83
     elif experiment == '2022-02-13': target_coords = 28.82, 2.99
     elif experiment == '2022-03-21': target_coords = 28.71, 3.45
+    elif experiment == '2022-08-12':
+        if trial_condition == "Probe2":
+            if entrance == u'SW':
+                target_coords = -37.48, -11.65
+            if entrance == u'SE':
+                target_coords = 12.28, -38.74
+            if entrance == u'NE':
+                target_coords = 39.68, 11.97
+            if entrance == u'NW':
+                target_coords = -11.18, 38.58
+        else:
+            if entrance == u'SW':
+                target_coords = 39.68, 11.97
+            if entrance == u'SE':
+                target_coords = -11.18, 38.58
+            if entrance == u'NE':
+                target_coords = -37.48, -11.65
+            if entrance == u'NW':
+                target_coords = 12.28, -38.74
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
@@ -215,4 +236,23 @@ def set_reverse_target(experiment, entrance, trial_condition):
             reverse_target_coords = -13.51, 38.80
     elif experiment == '2022-02-13': reverse_target_coords = -28.35, -2.36
     elif experiment == '2022-03-21': reverse_target_coords = -28.08, -3.29
+    elif experiment == '2022-08-12':
+        if trial_condition == "Probe2":
+            if entrance == u'SW':
+                reverse_target_coords = 37.54, 13.51
+            if entrance == u'SE':
+                reverse_target_coords = -13.51, 38.80
+            if entrance == u'NE':
+                reverse_target_coords = -38.32, -13.51
+            if entrance == u'NW':
+                reverse_target_coords = 12.88, -37.54
+        else:
+            if entrance == u'SW':
+                reverse_target_coords = -38.32, -13.51
+            if entrance == u'SE':
+                reverse_target_coords = 12.88, -37.54
+            if entrance == u'NE':
+                reverse_target_coords = 37.54, 13.51
+            if entrance == u'NW':
+                reverse_target_coords = -13.51, 38.80
     return reverse_target_coords
