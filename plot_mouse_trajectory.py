@@ -14,7 +14,7 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 '''plot single traj'''
 # exp = plib.TrialData()
-# exp.Load('2021-06-22', '36', '20')
+# exp.Load('2021-08-11', 48, 'Probe')
 # print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 # pltlib.plot_single_traj(exp, cropcoords = True)
@@ -45,23 +45,23 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 
 '''plot multiple trajectories on different graphs'''
-objs = [plib.TrialData() for i in range(3)]
+# objs = [plib.TrialData() for i in range(3)]
 # objs[0].Load('2021-11-19', 57, '1')
 # objs[1].Load('2021-11-19', 59, '1')
 # objs[2].Load('2021-11-19', 60, '1')
 # objs[3].Load('2021-11-19', 57, '18')
 # objs[4].Load('2021-11-19', 59, '18')
 # objs[5].Load('2021-11-19', 60, '18')
-objs[0].Load('2021-11-19', 57, 'Probe')
-objs[1].Load('2021-11-19', 59, 'Probe')
-objs[2].Load('2021-11-19', 60, 'Probe')
+# objs[0].Load('2021-11-19', 57, 'Probe')
+# objs[1].Load('2021-11-19', 59, 'Probe')
+# objs[2].Load('2021-11-19', 60, 'Probe')
 
-for i in objs:
-    pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
+# for i in objs:
+#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
     
 
 '''plots heatmap of two experiments'''
-# objs = [plib.TrialData() for i in range(8)]
+# objs = [plib.TrialData() for i in range(8)] #random entrance
 # objs[0].Load('2021-07-16', 37, 'Probe')
 # objs[1].Load('2021-07-16', 38, 'Probe')
 # objs[2].Load('2021-07-16', 39, 'Probe')
@@ -71,7 +71,7 @@ for i in objs:
 # objs[6].Load('2021-11-15', 55, 'Probe')
 # objs[7].Load('2021-11-15', 56, 'Probe')
 
-# objs = [plib.TrialData() for i in range(8)]
+# objs = [plib.TrialData() for i in range(8)] #static
 # objs[0].Load('2019-09-06', 9, 'Probe')
 # objs[1].Load('2019-09-06', 10, 'Probe')
 # objs[2].Load('2019-09-06', 11, 'Probe')
@@ -81,5 +81,14 @@ for i in objs:
 # objs[6].Load('2019-10-07', 15, 'Probe')
 # objs[7].Load('2019-10-07', 16, 'Probe')
 
+# objs = [plib.TrialData() for i in range(4)] #3 local cue, not rotating correctly
+# objs[0].Load('2019-12-11', 17, 'Probe')
+# objs[1].Load('2019-12-11', 18, 'Probe')
+# objs[2].Load('2019-12-11', 19, 'Probe')
+# objs[3].Load('2019-12-11', 20, 'Probe')
+# objs[0].Load('2021-08-11', 45, 'Probe')
+# objs[1].Load('2021-08-11', 46, 'Probe')
+# objs[2].Load('2021-08-11', 47, 'Probe')
+# objs[3].Load('2021-08-11', 48, 'Probe')
 
 # pltlib.plot_heatmap(objs, '2min', False)

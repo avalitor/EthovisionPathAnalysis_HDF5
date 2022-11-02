@@ -26,6 +26,10 @@ Static Entrances
 # d = calc.calc_search_bias(['2019-09-06', '2019-10-07'], '2min')
 # ls.plot_percent_bar(d)
 
+'''3 Local Cues'''
+d = calc.calc_search_bias(['2019-12-11','2021-08-11'], '2min')
+ls.plot_percent_bar(d)
+
 
 '''
 LATENCY, DISTANCE, SPEED LEARNING CURVES
@@ -57,8 +61,8 @@ Rotating & Static Entrances
 '''
 2 Target REL
 '''
-loc = calc.iterate_all_trials(['2022-08-12'], continuous= False)
-ls.plot_latency(loc, log=True, savefig = False)
-ls.plot_distance(loc, log=True, savefig = False)
-ls.plot_speed(loc, savefig = False)
-calc.curve_pValue(loc)
+# loc = calc.iterate_all_trials(['2022-08-12'], continuous= False)
+# ls.plot_latency(loc, log=True, savefig = False)
+# ls.plot_distance(loc, log=True, savefig = False)
+# ls.plot_speed(loc, savefig = False)
+# calc.curve_pValue(loc)

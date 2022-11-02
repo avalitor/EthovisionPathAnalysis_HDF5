@@ -147,22 +147,23 @@ def plot_distance(data, bestfit = False, log = True, savefig = False):
     
     else: line1, = ax.plot(x, avg, color='#5F0F40', label='Avg') #plots average
     
-    # line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
-    fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#5F0F40', ec='None', label='Range') #range
-    fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#5F0F40', ec='None', label='SE') #standard error
+    line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
+    # fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#5F0F40', ec='None', label='Range') #range
+    # fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#5F0F40', ec='None', label='SE') #standard error
     
     ax.set_xlabel('Trials', fontsize=13)
     ax.set_ylabel('Distance (cm)', fontsize=13)
     
-    leg4 = patches.Patch(alpha=0.5, color='#5F0F40', ec='None', label=fill2.get_label())
-    ax.legend(handles=[line1, fill1, leg4], fontsize=11, loc='upper right') #legend for average line
+    # leg4 = patches.Patch(alpha=0.5, color='#5F0F40', ec='None', label=fill2.get_label())
+    # ax.legend(handles=[line1, fill1, leg4], fontsize=11, loc='upper right') #legend for average line
     
     ax.grid(False) #hide gridlines
     ax.spines['top'].set_visible(False) 
     ax.spines['right'].set_visible(False) 
     ax.xaxis.set_major_locator(ticker.MultipleLocator(2)) #sets x-axis spacing
     if log:
-        ax.set(yscale="log") #set a logarithmic scale
+        # ax.set(yscale="log") #set a logarithmic scale
+        ax.set_yscale('log') #set a logarithmic scale
     
     if savefig == True:
             plt.savefig(ROOT_DIR+'/figures/AvgDistance M%s-%s.png'%(data['Distance'].columns[0], data['Distance'].columns[-1]), dpi=600, bbox_inches='tight', pad_inches = 0)
@@ -191,7 +192,7 @@ def plot_speed(data, bestfit = False, log = False, savefig = False):
             line1, = ax.plot(x, y_line, '--', color='#F18701', label=fit)
     else: line1, = ax.plot(x, avg, color='#F18701', label='Avg') #plots average
     
-    # line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
+    line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
     fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#F18701', ec='None', label='Range') #range
     fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#F18701', ec='None', label='SE') #standard error
     
@@ -262,10 +263,10 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    static = iterate_all_trials(['2019-09-06','2019-10-07'], continuous= True)
+    # static = iterate_all_trials(['2019-09-06','2019-10-07'], continuous= False)
     # plot_latency(rotate, log = True)
-    plot_distance(static, log = True)
+    # plot_distance(static, bestfit = True, log = True)
     
     # d = calc_search_bias(['2019-09-06', '2019-10-07'], '2min')
     # plot_percent_bar(d)
-    
+    pass

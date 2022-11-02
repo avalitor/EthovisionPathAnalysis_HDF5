@@ -267,6 +267,9 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
                         if t.exp == u'2021-11-15': 
                             t.r_nose_r = rotate(t.r_nose, origin, 180) #so it matches experiment jun16
                             print(t.mouse + t.trial)
+                        elif t.exp == u'2021-08-11':
+                            t.r_nose_r = rotate(t.r_nose, origin, 90) #so it matches experiment 2019-12-11 **NOT WORKING**
+                            print(t.mouse + t.trial)
                         else: t.r_nose_r = t.r_nose
         
         combocoords = np.empty([0,2])
@@ -396,7 +399,7 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
     x = np.arange(-150, 150)
     ax.plot(x, test2[0]*x+test2[1], ls='-', color = 'k') #line of symmetry
     
-    ax.plot(test[:,0], test[:,1])
+    # ax.plot(test[:,0], test[:,1])
     
     if params.check_reverse(trialclass.exp, trialclass.trial) is True: #annotates false target, optional
         prev_target = plt.Circle((params.set_reverse_target(trialclass.exp, trialclass.entrance, trialclass.trial)), 2.5, color='r')
