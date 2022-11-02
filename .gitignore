@@ -1,3 +1,4 @@
 modules/__pycache__/
-.ipynb_checkpoints/
+data/rawData/
 figures/
+.ipynb_checkpoints/
