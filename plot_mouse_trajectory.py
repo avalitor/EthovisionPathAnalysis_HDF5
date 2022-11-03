@@ -13,11 +13,11 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-# exp = plib.TrialData()
-# exp.Load('2021-08-11', 48, 'Probe')
-# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+exp = plib.TrialData()
+exp.Load('2022-09-20', '75', '1')
+print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-# pltlib.plot_single_traj(exp, cropcoords = True)
+pltlib.plot_single_traj(exp, cropcoords = True)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()

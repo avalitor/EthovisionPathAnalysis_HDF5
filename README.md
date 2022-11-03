@@ -2,7 +2,8 @@
 Processes raw data from Ethovision, stores and analyses data in HDF5 format (actually, using mat files for now)
 
 Python = 3.8
-Required modules in `environment.yml`
+
+Required packages listed in `environment.yml`
 
 To use this code, first export and save your raw data from Ethovision as excel files
 

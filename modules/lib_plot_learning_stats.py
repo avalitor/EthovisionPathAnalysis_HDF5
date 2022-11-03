@@ -147,15 +147,15 @@ def plot_distance(data, bestfit = False, log = True, savefig = False):
     
     else: line1, = ax.plot(x, avg, color='#5F0F40', label='Avg') #plots average
     
-    line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
-    # fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#5F0F40', ec='None', label='Range') #range
-    # fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#5F0F40', ec='None', label='SE') #standard error
+    # line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
+    fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#5F0F40', ec='None', label='Range') #range
+    fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#5F0F40', ec='None', label='SE') #standard error
     
     ax.set_xlabel('Trials', fontsize=13)
     ax.set_ylabel('Distance (cm)', fontsize=13)
     
-    # leg4 = patches.Patch(alpha=0.5, color='#5F0F40', ec='None', label=fill2.get_label())
-    # ax.legend(handles=[line1, fill1, leg4], fontsize=11, loc='upper right') #legend for average line
+    leg4 = patches.Patch(alpha=0.5, color='#5F0F40', ec='None', label=fill2.get_label())
+    ax.legend(handles=[line1, fill1, leg4], fontsize=11, loc='upper right') #legend for average line
     
     ax.grid(False) #hide gridlines
     ax.spines['top'].set_visible(False) 
@@ -192,7 +192,7 @@ def plot_speed(data, bestfit = False, log = False, savefig = False):
             line1, = ax.plot(x, y_line, '--', color='#F18701', label=fit)
     else: line1, = ax.plot(x, avg, color='#F18701', label='Avg') #plots average
     
-    line1 = ax.errorbar(x, avg, yerr=SE, color='#5F0F40', label='Distance')
+    # line1 = ax.errorbar(x, avg, yerr=SE, color='#F18701', label='Speed')
     fill1 = ax.fill_between(x, np.nanmin(y, axis=1), np.nanmax(y, axis=1), alpha=0.25, color='#F18701', ec='None', label='Range') #range
     fill2 = ax.fill_between(x, avg+SE, avg-SE, alpha=0.25, color='#F18701', ec='None', label='SE') #standard error
     

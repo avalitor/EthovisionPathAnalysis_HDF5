@@ -164,6 +164,9 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
     target = plt.Circle((trialclass.target), 2.5, color='b')
     ax.add_artist(target)
     
+    # test = plt.Circle((-37.48, -11.65), 2.5, color='orange')
+    # ax.add_artist(test)
+    
     if params.check_reverse(trialclass.exp, trialclass.trial) is True: #annotates false target, optional
         prev_target = plt.Circle((params.set_reverse_target(trialclass.exp, trialclass.entrance, trialclass.trial)), 2.5, color='r')
         ax.add_artist(prev_target)
@@ -417,8 +420,8 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
     exp = plib.TrialData()
-    exp.Load('2021-06-22', '36', '20')
+    exp.Load('2022-08-12', '72', '22')
     print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-    plot_2_target_analysis(exp, crop_interval=(exp.target_reverse, exp.target))
+    plot_single_traj(exp, cropcoords = True)
     pass
