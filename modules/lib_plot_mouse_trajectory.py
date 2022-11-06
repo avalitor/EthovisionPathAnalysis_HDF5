@@ -121,6 +121,8 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
     ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
     
+    line_colour = '#004E89'
+    
     if cropcoords == True and isinstance(crop_end_custom, bool) and isinstance(crop_interval, bool): #if we want to crop at target and not at custom location or interval
         #get target index
         index = coords_to_target(trialclass.r_nose, trialclass.target)
@@ -130,7 +132,7 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         else: idx_start = 0
             
         #plot path to target
-        ax.plot(trialclass.r_nose[idx_start:index+1,0], trialclass.r_nose[idx_start:index+1,1], ls='-', color = 'k')
+        ax.plot(trialclass.r_nose[idx_start:index+1,0], trialclass.r_nose[idx_start:index+1,1], ls='-', color = line_colour)
     elif isinstance(crop_end_custom, bool) == False: #checks if we want to crop at specific coordinate
         #get target index
         index = coords_to_target(trialclass.r_nose, crop_end_custom)
@@ -141,17 +143,17 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         #     if index2 <= index: index = index2
                 
         #plot path to custom target
-        ax.plot(trialclass.r_nose[:index+1,0], trialclass.r_nose[:index+1,1], ls='-', color = 'k')
+        ax.plot(trialclass.r_nose[:index+1,0], trialclass.r_nose[:index+1,1], ls='-', color = line_colour)
         
     elif isinstance(crop_interval, bool) == False: #check if we want to crop trajectory between two points
         #get start and end index
         idx_start = coords_to_target(trialclass.r_nose, crop_interval[0])
         idx_end = coords_to_target(trialclass.r_nose, crop_interval[1])
         #plot path between coordinates
-        ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = 'k')
+        ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = line_colour)
             
     else: 
-        ax.plot(trialclass.r_nose[:,0], trialclass.r_nose[:,1], ls='-', color = 'k')
+        ax.plot(trialclass.r_nose[:,0], trialclass.r_nose[:,1], ls='-', color = line_colour)
     #plot return path
     if returnpath == True:
         ax.plot(trialclass.r_nose[index:,0], trialclass.r_nose[index:,1], ls='-', color = '#717171')

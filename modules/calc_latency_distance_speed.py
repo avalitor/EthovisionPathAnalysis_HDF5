@@ -126,14 +126,34 @@ def curve_pValue(data):
 '''
 Calculate Search bias during probe
 '''
-#Calculates amount of time spent within a certain radius of the target (area is actually a square)
+
 def calc_time_in_area(target, array, idx_end, radius=15.):
+    '''
+    Calculates amount of time spent within a certain radius of the target (area is actually a square)
+    
+    Parameters
+    ----------
+    target : tuple
+        x y coordinate at the center of the region of interest.
+    array : 2xn array
+        list of xy coordinates covering the trajectory of interest.
+    idx_end : int
+        index of array where you want to cut it off, usually a time limit of 2min
+    radius : float, optional
+        Radius from the target coordinate that you want to include. The default is 15cm.
+
+    Returns
+    -------
+    time_in_range : float
+        time spent within a certain range of the target coordinate, in seconds
+
+    '''
     x = target[0]
     y = target[1]
     array = np.array(array[:idx_end], dtype=np.float64)
    
-    coords_in_range = ((array >= [x-radius, y-radius]) & (array <= [x+radius, y+radius])).all(axis=1)
-    idx_in_range = np.where(abs(coords_in_range)==True)[0]
+    coords_in_range = ((array >= [x-radius, y-radius]) & (array <= [x+radius, y+radius])).all(axis=1) #gets list of coordinates within range
+    idx_in_range = np.where(abs(coords_in_range)==True)[0] #gets index of the coordinates in range
     
     time_in_range = len(idx_in_range)*0.0333333 #multiplies #samples with sampling rate (30fps) to get time
     return time_in_range

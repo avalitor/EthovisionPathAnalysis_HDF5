@@ -14,14 +14,14 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 '''plot single traj'''
 exp = plib.TrialData()
-exp.Load('2022-09-20', '75', '1')
+exp.Load('2022-10-11', '5', '12')
 print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-pltlib.plot_single_traj(exp, cropcoords = True)
+pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
-# objs.Load('2022-08-12', 69, 'Probe2')
+# objs.Load('2022-10-11', 1, 'Probe 2')
 # print('Mouse %s Trial %s'%(objs.mouse_number, objs.trial))
 
 # pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse)
@@ -45,19 +45,18 @@ pltlib.plot_single_traj(exp, cropcoords = True)
 
 
 '''plot multiple trajectories on different graphs'''
-# objs = [plib.TrialData() for i in range(3)]
-# objs[0].Load('2021-11-19', 57, '1')
-# objs[1].Load('2021-11-19', 59, '1')
-# objs[2].Load('2021-11-19', 60, '1')
-# objs[3].Load('2021-11-19', 57, '18')
-# objs[4].Load('2021-11-19', 59, '18')
-# objs[5].Load('2021-11-19', 60, '18')
-# objs[0].Load('2021-11-19', 57, 'Probe')
-# objs[1].Load('2021-11-19', 59, 'Probe')
-# objs[2].Load('2021-11-19', 60, 'Probe')
+# objs = [plib.TrialData() for i in range(8)]
+# objs[0].Load('2022-10-11', 1, 'Probe 2')
+# objs[1].Load('2022-10-11', 2, 'Probe 2')
+# objs[2].Load('2022-10-11', 3, 'Probe 2')
+# objs[3].Load('2022-10-11', 4, 'Probe 2')
+# objs[4].Load('2022-10-11', 5, 'Probe 2')
+# objs[5].Load('2022-10-11', 6, 'Probe 2')
+# objs[6].Load('2022-10-11', 7, 'Probe 2')
+# objs[7].Load('2022-10-11', 8, 'Probe 2')
 
 # for i in objs:
-#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
+#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=True)
     
 
 '''plots heatmap of two experiments'''

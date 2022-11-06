@@ -61,7 +61,7 @@ Rotating & Static Entrances
 '''
 2 Target REL
 '''
-ttg = calc.iterate_all_trials(['2022-08-12'], continuous= False)
+# ttg = calc.iterate_all_trials(['2022-08-12'], continuous= False)
 # ls.plot_latency(ttg, bestfit=False, log=True, savefig = False)
 # ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
 # ls.plot_speed(ttg, bestfit=False, savefig = False)
@@ -72,3 +72,11 @@ ttg = calc.iterate_all_trials(['2022-08-12'], continuous= False)
 # ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
 # ls.plot_speed(ttg, bestfit=False, savefig = False)
 # calc.curve_pValue(ttg)
+
+
+'''2 Target REL: Ciara's knockout experiment'''
+ttg = calc.iterate_all_trials(['2022-10-11'], continuous= False)
+ls.plot_latency(ttg, bestfit=False, log=True, savefig = False)
+ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
+ls.plot_speed(ttg, bestfit=False, savefig = False)
+calc.curve_pValue(ttg)

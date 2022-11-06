@@ -16,13 +16,13 @@ import os
 import modules.lib_process_data_to_mat as plib
 from modules.config import RAW_FILE_DIR
 
-experiment = '2022-09-20'
+experiment = '2022-10-11'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
 for f in os.listdir(os.path.join(RAW_FILE_DIR, experiment+'_Raw Trial Data')):
     
-    data = plib.get_excel_data(experiment, i)
+    data = plib.get_excel_data(experiment, int(f.split('  ')[-1].split('.')[0])) #gets the ethovision file number
     data.Store()
     print(i , f)
     i = i+1
