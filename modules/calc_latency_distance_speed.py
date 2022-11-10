@@ -151,7 +151,7 @@ def calc_time_in_area(target, array, idx_end, radius=15.):
     x = target[0]
     y = target[1]
     array = np.array(array[:idx_end], dtype=np.float64)
-   
+    #CHECK OUT lib_plot_mouse_trajectory for coords_to_target function to get a circle
     coords_in_range = ((array >= [x-radius, y-radius]) & (array <= [x+radius, y+radius])).all(axis=1) #gets list of coordinates within range
     idx_in_range = np.where(abs(coords_in_range)==True)[0] #gets index of the coordinates in range
     
@@ -192,6 +192,7 @@ def axis_of_symm(A, B): #gets axis of symmetry between two points
     b = midpoint[1] - (-1/theta[0]) * midpoint[0] #calculates perpendicular line bewteen points
     return slope,  b
 
+#line = a list of slope and b
 def get_perp_intersect(point, line): #gets coords where point perpendicularly intersects with line
     point_m = -1/line[0]
     point_b = point[1]-(point_m*point[0])
@@ -200,12 +201,28 @@ def get_perp_intersect(point, line): #gets coords where point perpendicularly in
     y = line[0]*x + line[1]
     return x, y
 
-def calc_traj_spread(exp):
-    TargetB = exp.target
-    TargetA = exp.target_reverse
-    symm_line = axis_of_symm(TargetA, TargetB)
+
+def dist_from_optimal_path(point, targetA, targetB):
+    optimal_path = np.polyfit(np.array([targetA[0], targetB[0]]), np.array([targetA[1], targetB[1]]), 1) #gets line between two points
     
-    coord_interval = get_coords_bw_points(exp.r_nose, TargetB, TargetA)
+    line_intersect = get_perp_intersect(point, optimal_path)
+    
+    distance = pltlib.calc_dist_bw_points(point, line_intersect)
+    return distance
+
+def calc_traj_spread(exp):
+    targetA = exp.target
+    targetB = exp.target_reverse
+    
+    coord_interval = get_coords_bw_points(exp.r_nose, targetB, targetA)
+    
+    i = 0
+    point_distances = np.zeros([len(coord_interval), 1])
+    for c in coord_interval:
+        point_distances[i] = dist_from_optimal_path(c, targetA, targetB) #NEED TO FIX THIS
+        i = i+1
+        
+    max_distance = np.max(point_distances)
     
     # def myfunc(n):
     #     for i in n:
@@ -213,30 +230,26 @@ def calc_traj_spread(exp):
             
     # moved_points = np.fromiter(myfunc(coord_interval), dtype=float)
     
-    i = 0
-    moved_points = np.empty([len(coord_interval), 2])
-    while i < len(coord_interval):
-        moved_point = get_perp_intersect(coord_interval[i], symm_line)
-        moved_points[i] = moved_point
-        i = i+1
+    # i = 0
+    # moved_points = np.empty([len(coord_interval), 2])
+    # while i < len(coord_interval):
+    #     moved_point = get_perp_intersect(coord_interval[i], symm_line)
+    #     moved_points[i] = moved_point
+    #     i = i+1
         
-    return moved_points
+    return max_distance
 
 def calc_spread_iterate_exp(experiments, show_load = True):
     pass
 
 if __name__ == '__main__':
     exp = plib.TrialData()
-    exp.Load('2021-06-22', '36', '20')
+    exp.Load('2022-10-11', '3', 'Probe 2')
     
-    test = calc_traj_spread(exp)
+    coord_interval = get_coords_bw_points(exp.r_nose, exp.target_reverse, exp.target)
     
-    # TargetB = exp.target
-    # TargetA = exp.target_reverse
+    # test2 = dist_from_optimal_path((0,0), exp.target, exp.target_reverse)
     
-    # point = [0,0]
-    
-    # test2 = axis_of_symm(TargetA, TargetB)
-    # result = get_perp_intersect(point, test2)
+    max_distance = calc_traj_spread(exp)
     
     

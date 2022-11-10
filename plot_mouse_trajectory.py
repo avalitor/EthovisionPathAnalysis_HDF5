@@ -14,7 +14,7 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 '''plot single traj'''
 exp = plib.TrialData()
-exp.Load('2022-10-11', '5', '12')
+exp.Load('2022-10-11', '1', 'Probe')
 print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
@@ -28,20 +28,29 @@ pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 
 '''plots single trajectory between two points'''
 # exp = plib.TrialData()
-# exp.Load('2021-06-22', '36', '20')
+# exp.Load('2022-10-11', '1', 'Probe')
 # print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-# pltlib.plot_single_traj(exp, crop_interval=(exp.target_reverse, exp.target))
+# pltlib.plot_single_traj(exp, crop_interval=(exp.target, exp.target_reverse))
 
 
 '''plots multiple trajectories and REL'''
 # objs = [plib.TrialData() for i in range(2)]
-# objs[0].Load('2019-10-07', 15, '16')
-# objs[1].Load('2019-10-07', 15, 'R180 1')
+# objs[0].Load('2019-10-07', 14, 'R180 6')
+# objs[1].Load('2019-10-07', 14, 'R270 1')
 
 # print(objs[0].protocol_name)
 
 # pltlib.plot_multi_traj(objs, crop_rev = True, savefig = False)
+
+'''plots multiple trajectories with custom coordinates'''
+# objs = [plib.TrialData() for i in range(2)]
+# objs[0].Load('2019-10-07', 14, 'R180 6')
+# objs[1].Load('2019-10-07', 14, 'R270 1')
+
+# print(objs[0].protocol_name)
+
+# pltlib.plot_multi_traj(objs, crop_end_custom=[objs[0].target, (2.88, 27.45)], savefig = True)
 
 
 '''plot multiple trajectories on different graphs'''

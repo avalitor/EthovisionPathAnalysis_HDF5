@@ -152,6 +152,11 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         #plot path between coordinates
         ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = line_colour)
             
+        #annotate the two points
+        point1 = plt.Circle((crop_interval[0]), 2.5, color='#F18701')
+        point2 = plt.Circle((crop_interval[1]), 2.5, color='#F18701')
+        ax.add_artist(point1)
+        ax.add_artist(point2)
     else: 
         ax.plot(trialclass.r_nose[:,0], trialclass.r_nose[:,1], ls='-', color = line_colour)
     #plot return path
@@ -183,7 +188,7 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         
     plt.show()
     
-def plot_multi_traj(trialclass_list, crop_rev = False, savefig = False):
+def plot_multi_traj(trialclass_list, crop_rev = False, crop_end_custom = False, savefig = False):
     '''
     Plots multiple trajectories on a single image
     If the targets rotate with the entrances, automatically align the trajectories so the targets are the same
@@ -194,6 +199,8 @@ def plot_multi_traj(trialclass_list, crop_rev = False, savefig = False):
         List of class TrialData
     crop_rev: bool, optional
         crops trajectory at reverse target, if it exists
+    crop_end_custom: bool or list of tuples, optional
+        crops each trajectory at custom coordinate
     savefig : bool, optional
         Save this figure as a png image. The default is False.
     '''
@@ -216,12 +223,18 @@ def plot_multi_traj(trialclass_list, crop_rev = False, savefig = False):
     
     colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
     # linestyles = iter(['-', '--', ':'])
+    if isinstance(crop_end_custom, bool) == False: #checks to see if we are using custom crop coordinates
+        if type(crop_end_custom) is not list: print('Error: crop custom not a list') #checks to make sure it is a list
+        else: target_custom = iter(crop_end_custom) #sets up an iterating coordinate
+    
     for t in trialclass_list:
         if len(t.time)>0: #checks to see if list data is not empty
             
             if crop_rev == True:
                 try : index = coords_to_target(t.r_nose, t.target_reverse)
                 except:index = coords_to_target(t.r_nose, t.target)
+            elif isinstance(crop_end_custom, bool) == False:
+                index = coords_to_target(t.r_nose, next(target_custom))
             else: index = coords_to_target(t.r_nose, t.target)
 
             #plot path to target
@@ -352,7 +365,7 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
         Plot the return path from the target. The default is False.
     continuous : bool, optional
         Plots the last continuous trajectory to target
-    savefig : book, optional
+    savefig : bool, optional
         Saves the figure. The default is False.
     '''
 
@@ -398,11 +411,11 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
     target = plt.Circle((trialclass.target), 2.5, color='b')
     ax.add_artist(target)
     
-    test2 = (0.5129473857826159, 7.744444169553028)
+    #testing 2target analysis
+    line = np.polyfit(np.array([trialclass.target[0], trialclass.target_reverse[0]]), np.array([trialclass.target[1], trialclass.target_reverse[1]]), 1)
 
-
-    x = np.arange(-150, 150)
-    ax.plot(x, test2[0]*x+test2[1], ls='-', color = 'k') #line of symmetry
+    x = np.arange(-60, 60)
+    ax.plot(x, line[0]*x+line[1], ls='-', color = 'k') #line
     
     # ax.plot(test[:,0], test[:,1])
     
@@ -422,8 +435,8 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
     exp = plib.TrialData()
-    exp.Load('2022-08-12', '72', '22')
+    exp.Load('2022-10-11', '1', 'Probe 2')
     print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-    plot_single_traj(exp, cropcoords = True)
+    plot_2_target_analysis(exp, cropcoords = True)
     pass
