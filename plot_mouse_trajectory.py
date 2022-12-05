@@ -13,11 +13,11 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-exp = plib.TrialData()
-exp.Load('2022-10-11', '1', 'Probe')
-print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+# exp = plib.TrialData()
+# exp.Load('2022-11-04', '4', '21')
+# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
+# pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
@@ -36,12 +36,12 @@ pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 
 '''plots multiple trajectories and REL'''
 # objs = [plib.TrialData() for i in range(2)]
-# objs[0].Load('2019-10-07', 14, 'R180 6')
-# objs[1].Load('2019-10-07', 14, 'R270 1')
+# objs[0].Load('2022-11-04', 4, '20')
+# objs[1].Load('2022-11-04', 4, 'R90')
 
 # print(objs[0].protocol_name)
 
-# pltlib.plot_multi_traj(objs, crop_rev = True, savefig = False)
+# pltlib.plot_multi_traj(objs, align_entrance=False, crop_rev = False, savefig = False)
 
 '''plots multiple trajectories with custom coordinates'''
 # objs = [plib.TrialData() for i in range(2)]
@@ -100,3 +100,12 @@ pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 # objs[3].Load('2021-08-11', 48, 'Probe')
 
 # pltlib.plot_heatmap(objs, '2min', False)
+
+
+# objs = [plib.TrialData() for i in range(1)] #3 local cue, not rotating correctly
+# objs[0].Load('2022-11-04', 1, 'Probe')
+# objs[1].Load('2022-11-04', 3, 'Probe')
+
+objs = plib.TrialData()
+objs.Load('2022-11-04', 1, 'Probe')
+pltlib.plot_heatmap(objs, '2min', False)

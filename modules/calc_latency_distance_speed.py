@@ -104,8 +104,8 @@ def iterate_all_trials(experiment, continuous = False, show_load = True):
 def curve_pValue(data):
     
     def early_late_ttest(stat_data):
-        early = [x for xs in stat_data.iloc[1:4,:].values.tolist() for x in xs] #get trials 2-4
-        late = [x for xs in stat_data.tail(3).values.tolist() for x in xs] #get last 3 trials
+        early = [x for xs in stat_data.iloc[0:1,:].values.tolist() for x in xs] #get trials 2-4
+        late = [x for xs in stat_data.tail(1).values.tolist() for x in xs] #get last 3 trials
         t_test = stats.ttest_rel(early, late, nan_policy = 'omit') #Calculate the t-test on TWO RELATED samples of scores
         return t_test
     

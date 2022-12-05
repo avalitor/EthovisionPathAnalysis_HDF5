@@ -58,6 +58,7 @@ def set_background_image(experiment, is_reverse):
     if experiment == '2022-08-12': background = 'BKGDimage-220812.png'
     if experiment == '2022-09-20': background = 'BKGDimage-20220920.png'
     if experiment == '2022-10-11': background = 'BKGDimage-20221011.png'
+    if experiment == '2022-11-04': background = 'BKGDimage-20221104.png'
     return background
 
 #manually sets food target coordinates based on experiment
@@ -214,7 +215,16 @@ def set_target(experiment, entrance, trial_condition):
             if entrance == u'NE':
                 target_coords = -23.60,-17.63
             if entrance == u'NW':
-                target_coords = 17.63, -22.18    
+                target_coords = 17.63, -22.18
+    elif experiment == '2022-11-04':
+        if entrance == u'SW':
+            target_coords = 38.90, 11.97
+        if entrance == u'SE':
+            target_coords = -11.65, 38.27
+        if entrance == u'NE':
+            target_coords = -38.11, -12.13
+        if entrance == u'NW':
+            target_coords = 11.65, -38.74 
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
@@ -321,5 +331,14 @@ def set_reverse_target(experiment, entrance, trial_condition):
         if entrance == u'NE':
             reverse_target_coords = 38.39,12.37 
         if entrance == u'NW':
-            reverse_target_coords = -12.51,39.53  
+            reverse_target_coords = -12.51,39.53
+    elif experiment == '2022-11-04':
+        if entrance == u'SW':
+            reverse_target_coords = 11.65, -38.74
+        if entrance == u'SE':
+            reverse_target_coords = 38.90, 11.97
+        if entrance == u'NE':
+            reverse_target_coords = -11.65, 38.27
+        if entrance == u'NW':
+            reverse_target_coords = -38.11, -12.13
     return reverse_target_coords

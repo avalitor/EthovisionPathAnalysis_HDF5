@@ -188,7 +188,7 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         
     plt.show()
     
-def plot_multi_traj(trialclass_list, crop_rev = False, crop_end_custom = False, savefig = False):
+def plot_multi_traj(trialclass_list, align_entrance = True, crop_rev = False, crop_end_custom = False, savefig = False):
     '''
     Plots multiple trajectories on a single image
     If the targets rotate with the entrances, automatically align the trajectories so the targets are the same
@@ -197,9 +197,11 @@ def plot_multi_traj(trialclass_list, crop_rev = False, crop_end_custom = False, 
     ----------
     trialclass_list : list
         List of class TrialData
+    align_entrance : bool, optional
+        aligns all rotating entrances to the same entrance
     crop_rev: bool, optional
         crops trajectory at reverse target, if it exists
-    crop_end_custom: bool or list of tuples, optional
+    crop_end_custom : bool or list of tuples, optional
         crops each trajectory at custom coordinate
     savefig : bool, optional
         Save this figure as a png image. The default is False.
@@ -211,15 +213,16 @@ def plot_multi_traj(trialclass_list, crop_rev = False, crop_end_custom = False, 
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass_list[0].bkgd_img))
     ax.imshow(img, extent=trialclass_list[0].img_extent) #plot image to match ethovision coordinates
     
-    if all(trialclass_list[0].target != trialclass_list[1].target): #if the targets change between trials
-        temp = plib.TrialData()
-        temp.Load(trialclass_list[0].exp, '*', 'Probe')
-        origin = get_arena_center(temp.r_nose) #get center of rotation
-        for t in trialclass_list: #rotate all coordinates so they align
-            if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
-            elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
-            elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
-            else: t.r_nose_r = t.r_nose
+    if align_entrance:
+        if all(trialclass_list[0].target != trialclass_list[1].target): #if the targets change between trials
+            temp = plib.TrialData()
+            temp.Load(trialclass_list[0].exp, '*', 'Probe')
+            origin = get_arena_center(temp.r_nose) #get center of rotation
+            for t in trialclass_list: #rotate all coordinates so they align
+                if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
+                elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
+                elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
+                else: t.r_nose_r = t.r_nose
     
     colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
     # linestyles = iter(['-', '--', ':'])
