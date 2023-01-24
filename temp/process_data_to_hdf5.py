@@ -20,7 +20,7 @@ from modules.config import ROOT_DIR
 
 # savepath = os.path.join(ROOT_DIR, 'data', 'processedData', 'test.hdf5')
 
-
+mat_file1 = os.path.join(ROOT_DIR, 'data', 'processedData', 'mpos_22Jun2021_trial_6_startloc_SW_day_9.mat')
 mat_file2 = os.path.join(ROOT_DIR, 'data', 'processedData', '2022-10-11', 'hfm_2022-10-11_M4_Habituation 3.mat')
 # excel_file = os.path.join(ROOT_DIR, 'data', 'rawData', '2021-07-16_Raw Trial Data', 'Raw data-Hidden Food Maze-16Jul2021-Trial    25.xlsx')
 
@@ -60,4 +60,5 @@ def store_as_hdf5(filepath):
 
 #loads mat file
 
+mat_data1 = scipy.io.loadmat(mat_file1)
 mat_data2 = scipy.io.loadmat(mat_file2)

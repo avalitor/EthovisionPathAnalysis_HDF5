@@ -13,18 +13,18 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-# exp = plib.TrialData()
-# exp.Load('2022-11-04', '4', '21')
-# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+exp = plib.TrialData()
+exp.Load('2022-10-11', '6', '*')
+print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 # pltlib.plot_single_traj(exp, cropcoords = True, savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
-# objs.Load('2022-10-11', 1, 'Probe 2')
+# objs.Load('2022-08-12', '69', '14')
 # print('Mouse %s Trial %s'%(objs.mouse_number, objs.trial))
 
-# pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse)
+# pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse, continuous = False, savefig = False)
 
 '''plots single trajectory between two points'''
 # exp = plib.TrialData()
@@ -50,7 +50,7 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 # print(objs[0].protocol_name)
 
-# pltlib.plot_multi_traj(objs, crop_end_custom=[objs[0].target, (2.88, 27.45)], savefig = True)
+# pltlib.plot_multi_traj(objs, crop_end_custom=[objs[0].target, (2.88, 27.45)], savefig = False)
 
 
 '''plot multiple trajectories on different graphs'''
@@ -65,7 +65,7 @@ from modules import lib_plot_mouse_trajectory as pltlib
 # objs[7].Load('2022-10-11', 8, 'Probe 2')
 
 # for i in objs:
-#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=True)
+#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
     
 
 '''plots heatmap of two experiments'''
@@ -102,10 +102,10 @@ from modules import lib_plot_mouse_trajectory as pltlib
 # pltlib.plot_heatmap(objs, '2min', False)
 
 
-# objs = [plib.TrialData() for i in range(1)] #3 local cue, not rotating correctly
+# objs = [plib.TrialData() for i in range(1)]
 # objs[0].Load('2022-11-04', 1, 'Probe')
 # objs[1].Load('2022-11-04', 3, 'Probe')
 
-objs = plib.TrialData()
-objs.Load('2022-11-04', 1, 'Probe')
-pltlib.plot_heatmap(objs, '2min', False)
+# objs = plib.TrialData()
+# objs.Load('2022-11-04', 1, 'Probe')
+# pltlib.plot_heatmap(objs, '2min', False)

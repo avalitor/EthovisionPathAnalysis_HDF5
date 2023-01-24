@@ -16,7 +16,7 @@ import os
 import modules.lib_process_data_to_mat as plib
 from modules.config import RAW_FILE_DIR
 
-experiment = '2022-11-04'
+experiment = '2022-10-11'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat

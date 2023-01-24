@@ -46,7 +46,7 @@ class TrialData(): #container to store all trial data and metadata
     
     def __init__(self, exp='', protocol_name='', protocol_description='',
                   eth_file=[], bkgd_img='', img_extent=[], experimenter='',
-                  mouse_number='', day='', trial='', entrance='', target=[],
+                  mouse_number='', mouse_sex = '', day='', trial='', entrance='', target=[],
                   time=[], r_nose=[], r_center=[], r_tail=[]):
        
         '''
@@ -75,6 +75,9 @@ class TrialData(): #container to store all trial data and metadata
             
         mouse_number: int
             ID number of the mouse
+            
+        mouse_sex: str
+            male or female
             
         day: int
             day that trial was performed. Day 1 is experiment name
@@ -121,6 +124,7 @@ class TrialData(): #container to store all trial data and metadata
         self.experimenter = experimenter
         
         self.mouse_number = mouse_number
+        self.mouse_sex = mouse_sex
         self.day = day
         self.trial = trial
         self.entrance = entrance
@@ -158,6 +162,7 @@ class TrialData(): #container to store all trial data and metadata
         self.img_extent=m['img_extent'][0]
         self.experimenter=m['experimenter'][0]
         self.mouse_number=m['mouse_number'][0]
+        self.mouse_sex=m['mouse_sex'][0]
         self.day=m['day'][0]
         self.trial=m['trial'][0]
         self.entrance=m['entrance'][0]
@@ -206,7 +211,7 @@ def get_excel_data(exp, eth_file):
         t.day = try_or_default(lambda: h.loc['Day'][0], default='', msg=err_msg%'Day' )
         t.trial = try_or_default(lambda: h.loc['Trial'][0], default='', msg=err_msg%'Trial' )
         t.entrance = try_or_default(lambda: h.loc['Start Location'][0], default='', msg=err_msg%'Start Location' )
-                
+        
         t.filename = ('hfm_%s_M%s_%s.mat' %(t.exp, t.mouse_number, t.trial))
         
         #opens trial to get data
@@ -222,12 +227,15 @@ def get_excel_data(exp, eth_file):
         t.protocol_description = try_or_default(lambda: i.loc[exp,['Protocol Description']].to_numpy()[0], default='', msg=err_msg%'Protocol Description' )
         t.img_extent = try_or_default(lambda: np.array(i.loc[exp,['img_extent']][0].split(','),dtype=np.float64), default=np.array([]), msg=err_msg%'img_extent' )
         t.experimenter = try_or_default(lambda: i.loc[exp,['Experimenter']].to_numpy()[0], default='', msg=err_msg%'Experimenter' )
+        t.mouse_sex = try_or_default(lambda: i.loc[exp,['mouse_sex']].to_numpy()[0], default='', msg=err_msg%'Mouse Sex excel')
         
         #determies data fromm parameter file
         t.bkgd_img = try_or_default(lambda: params.set_background_image(t.exp, params.check_reverse(t.exp, t.trial)), default='', msg=err_msg%'bkgd_img' )
         t.target = try_or_default(lambda: params.set_target(t.exp, t.entrance, t.trial), default=np.array([]), msg=err_msg%'Target' )
         if params.check_reverse(t.exp, t.trial) is True: #annotates false target, optional
             t.target_reverse = try_or_default(lambda: params.set_reverse_target(t.exp, t.entrance, t.trial), default=np.array([]), msg=err_msg%'Reverse Target' )
+        if t.mouse_sex == 'mixed': 
+            t.mouse_sex = try_or_default(lambda: params.get_mouse_sex(t.exp, t.mouse_number), default=np.array([]), msg=err_msg%'Mouse Sex mixed' )
         
         return t
     
@@ -259,6 +267,13 @@ def manual_single_excel_import(path):
     
     err_msg = ' *** ERROR  :::  %s data not found in ' + os.path.basename(path)
     
+    #opens trial header to get metadata NOT DONE
+    h = pd.read_excel(path,nrows=nrows_header,index_col=0,usecols='A,B')
+    t.mouse_number = try_or_default(lambda: h.loc['Mouse Number'][0], default=input('Enter mouse number'), msg=err_msg%'Mouse Number' )
+    t.day = try_or_default(lambda: h.loc['Day'][0], default='', msg=err_msg%'Day' )
+    t.trial = try_or_default(lambda: h.loc['Trial'][0], default='', msg=err_msg%'Trial' )
+    t.entrance = try_or_default(lambda: h.loc['Start Location'][0], default='', msg=err_msg%'Start Location' )
+    
     #opens trial to get data
     d = pd.read_excel(path,na_values=['-'],header=0, skiprows = nrows_header)
     t.time = try_or_default(lambda: d['Recording time'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Recording time' )
@@ -276,7 +291,6 @@ if __name__ == '__main__':
     # objs = [TrialData() for i in range(2)]
     # objs[0].Load('2019-09-06', 10, '17')
     # objs[1].Load('2019-09-06', 10, 'R180 1')
-    
     
     test = manual_single_excel_import(RAW_FILE_DIR + 'Raw data-LED_test-Trial     3.xlsx')
     

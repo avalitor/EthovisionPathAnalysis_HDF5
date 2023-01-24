@@ -141,9 +141,13 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         # if cropcoords == True: 
         #     index2 = coords_to_target(trialclass.r_nose, trialclass.target)
         #     if index2 <= index: index = index2
+        
+        #gets starting index if plotting continuous trajectory
+        if continuous == True: idx_start = continuous_coords_to_target(trialclass, index)
+        else: idx_start = 0
                 
         #plot path to custom target
-        ax.plot(trialclass.r_nose[:index+1,0], trialclass.r_nose[:index+1,1], ls='-', color = line_colour)
+        ax.plot(trialclass.r_nose[idx_start:index+1,0], trialclass.r_nose[idx_start:index+1,1], ls='-', color = line_colour)
         
     elif isinstance(crop_interval, bool) == False: #check if we want to crop trajectory between two points
         #get start and end index

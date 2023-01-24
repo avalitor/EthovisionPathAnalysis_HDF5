@@ -15,6 +15,9 @@ Input Variables:
         
     entrance: str
         two letter direction of the entrance, written in the excel file
+        
+    mouse: str
+        mouse number
 
 @author: Kelly
 """
@@ -60,6 +63,14 @@ def set_background_image(experiment, is_reverse):
     if experiment == '2022-10-11': background = 'BKGDimage-20221011.png'
     if experiment == '2022-11-04': background = 'BKGDimage-20221104.png'
     return background
+
+def get_mouse_sex(experiment, mouse):
+    if experiment == '2022-10-11':
+        if mouse == '2' or mouse == '3' or mouse == '4' or mouse == '5' or mouse == '7': 
+            mouse_sex = 'male'
+        if mouse == '1' or mouse == '6' or mouse == '8':
+            mouse_sex = 'female'
+    return mouse_sex
 
 #manually sets food target coordinates based on experiment
 def set_target(experiment, entrance, trial_condition):

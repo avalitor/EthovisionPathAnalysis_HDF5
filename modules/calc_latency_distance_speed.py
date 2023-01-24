@@ -30,12 +30,37 @@ def calc_speed(coords, time):
     speed = calc_distance(coords)/np.nansum(time)
     return speed
 
-def calc_lat_dist_sped(data, continuous = False):
+def calc_lat_dist_sped(data, custom_target = False, continuous = False):
+    '''
+    calculate latency distanca and speed of single trial
+
+    Parameters
+    ----------
+    data : TrialData custom class
+        Custom data class.
+    custom_target : bool or tuple, optional
+        Crop trajectory at custom coordinate that is not the target. The default is False.
+    continuous : bool, optional
+        Only calculate from the last continuous trajectory. The default is False.
+
+    Returns
+    -------
+    latency : float64
+        time to target or custom coordinate in seconds.
+    distance : float64
+        distance to target coordinate in cm.
+    speed : float64
+        average speed to custome coordinate in cm/s.
+
+    '''
     # data = plib.TrialData()
     # data.Load(exp, mouse, trial)
     coords = data.r_nose #choose which body coordinate you want, change to r_nose or r_center for different coordinates
     
-    idx_end = pltlib.coords_to_target(coords, data.target)+1 #plus 1 so it includes the indexed coordinate
+    if isinstance(custom_target, bool):
+        idx_end = pltlib.coords_to_target(coords, data.target)+1 #plus 1 so it includes the indexed coordinate
+    else:
+        idx_end = pltlib.coords_to_target(coords, custom_target)+1 #plus 1 so it includes the indexed coordinate
     
     if continuous == True: 
         idx_start = pltlib.continuous_coords_to_target(data, idx_end)
@@ -79,7 +104,7 @@ def get_probe_day(experiment):
     probe_day = d.day
     return probe_day
 
-def iterate_all_trials(experiment, continuous = False, show_load = True):
+def iterate_all_trials(experiment, training_trials_only = True, continuous = False, show_load = True):
     latency = pd.DataFrame()
     distance = pd.DataFrame()
     speed = pd.DataFrame()
@@ -87,10 +112,21 @@ def iterate_all_trials(experiment, continuous = False, show_load = True):
     if type(experiment) is not list: experiment = [ experiment ] #checks if it is a list of experiments
     for exp in experiment:
         for files in os.listdir(glob.glob(glob.glob(PROCESSED_FILE_DIR+'/'+exp+'/')[0], recursive = True)[0]): #finds file path based on experiment
-            if files.split('_')[-1].split('.')[0].isdigit(): #checks if it is a training file
+            if training_trials_only:
+                if files.split('_')[-1].split('.')[0].isdigit(): #checks if it is a training file
+                    d = plib.TrialData()
+                    d.Load(exp, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
+        
+                    if show_load: print('Reading M%s Trial %s'%(d.mouse_number, d.trial))
+                    if int(d.day) < int(get_probe_day(exp)): #checks if training trial took place before probe day
+        
+                        latency.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[0]
+                        distance.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[1]
+                        speed.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[2]
+            else: #NOT FINISHED, need to figure out how to exclude habituation trials
                 d = plib.TrialData()
                 d.Load(exp, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
-    
+                
                 if show_load: print('Reading M%s Trial %s'%(d.mouse_number, d.trial))
                 if int(d.day) < int(get_probe_day(exp)): #checks if training trial took place before probe day
     
@@ -184,13 +220,12 @@ def calc_search_bias(experiment, time_limit = '2min'):
 Calculat spread along symmetry line betwen two points
 '''
 
-
-def axis_of_symm(A, B): #gets axis of symmetry between two points
-    midpoint = ((A[0] + B[0])/2, (A[1] + B[1])/2)
-    theta = np.polyfit(np.array([A[0], B[0]]), np.array([A[1], B[1]]), 1) #gets line between two points
-    slope = (-1/theta[0]) #gets the perpendicular slope
-    b = midpoint[1] - (-1/theta[0]) * midpoint[0] #calculates perpendicular line bewteen points
-    return slope,  b
+# def axis_of_symm(A, B): #gets axis of symmetry between two points
+#     midpoint = ((A[0] + B[0])/2, (A[1] + B[1])/2)
+#     theta = np.polyfit(np.array([A[0], B[0]]), np.array([A[1], B[1]]), 1) #gets line between two points
+#     slope = (-1/theta[0]) #gets the perpendicular slope
+#     b = midpoint[1] - (-1/theta[0]) * midpoint[0] #calculates perpendicular line bewteen points
+#     return slope,  b
 
 #line = a list of slope and b
 def get_perp_intersect(point, line): #gets coords where point perpendicularly intersects with line
@@ -202,7 +237,7 @@ def get_perp_intersect(point, line): #gets coords where point perpendicularly in
     return x, y
 
 
-def dist_from_optimal_path(point, targetA, targetB):
+def dist_from_optimal_path(point, targetA, targetB): #calculates distance between point and perp intersect of point & line
     optimal_path = np.polyfit(np.array([targetA[0], targetB[0]]), np.array([targetA[1], targetB[1]]), 1) #gets line between two points
     
     line_intersect = get_perp_intersect(point, optimal_path)
@@ -210,7 +245,7 @@ def dist_from_optimal_path(point, targetA, targetB):
     distance = pltlib.calc_dist_bw_points(point, line_intersect)
     return distance
 
-def calc_traj_spread(exp):
+def calc_traj_spread(exp): #iterates over all points in the trial
     targetA = exp.target
     targetB = exp.target_reverse
     
@@ -223,19 +258,6 @@ def calc_traj_spread(exp):
         i = i+1
         
     max_distance = np.max(point_distances)
-    
-    # def myfunc(n):
-    #     for i in n:
-    #         yield i #get_perp_intersect(i, symm_line)
-            
-    # moved_points = np.fromiter(myfunc(coord_interval), dtype=float)
-    
-    # i = 0
-    # moved_points = np.empty([len(coord_interval), 2])
-    # while i < len(coord_interval):
-    #     moved_point = get_perp_intersect(coord_interval[i], symm_line)
-    #     moved_points[i] = moved_point
-    #     i = i+1
         
     return max_distance
 
@@ -246,10 +268,7 @@ if __name__ == '__main__':
     exp = plib.TrialData()
     exp.Load('2022-10-11', '3', 'Probe 2')
     
-    coord_interval = get_coords_bw_points(exp.r_nose, exp.target_reverse, exp.target)
-    
-    # test2 = dist_from_optimal_path((0,0), exp.target, exp.target_reverse)
-    
+    coord_interval = get_coords_bw_points(exp.r_nose, exp.target_reverse, exp.target)    
     max_distance = calc_traj_spread(exp)
     
     

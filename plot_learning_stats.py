@@ -10,6 +10,7 @@ for spatial learning manuscript
 
 import modules.lib_plot_learning_stats as ls
 import modules.calc_latency_distance_speed as calc
+from modules import lib_process_data_to_mat as plib
 
 '''
 PLOT PERCENT BAR
@@ -35,6 +36,15 @@ Static Entrances
 LATENCY, DISTANCE, SPEED LEARNING CURVES
 ***************************************
 
+Single trial REL data
+'''
+exp = plib.TrialData()
+exp.Load('2019-10-07', '16', 'R180 1')
+print(f'Mouse {exp.mouse_number} Trial {exp.trial}')
+latency, distance, speed = calc.calc_lat_dist_sped(exp, custom_target=exp.target_reverse)
+
+'''
+
 Rotating & Static Entrances
 '''
 # rotate = calc.iterate_all_trials(['2021-07-16', '2021-11-15'], continuous= False)
@@ -43,7 +53,7 @@ Rotating & Static Entrances
 # ls.plot_speed(rotate, savefig = False)
 # calc.curve_pValue(rotate)
 
-# static = calc.iterate_all_trials(['2019-09-06','2019-10-07'], continuous= False)
+# static = calc.iterate_all_trials(['2019-09-06','2019-10-07'], training_trials_only = False)
 # ls.plot_latency(static, log=True, savefig = False)
 # ls.plot_distance(static, log=True, savefig = False)
 # ls.plot_speed(static, savefig = False)
@@ -82,8 +92,8 @@ Rotating & Static Entrances
 # calc.curve_pValue(ttg)
 
 '''Amarpreet experiment'''
-static = calc.iterate_all_trials(['2022-11-04'], continuous= False)
-ls.plot_latency(static, log=True, savefig = False)
-ls.plot_distance(static, log=True, savefig = False)
-ls.plot_speed(static, savefig = False)
-calc.curve_pValue(static)
+# static = calc.iterate_all_trials(['2022-11-04'], continuous= False)
+# ls.plot_latency(static, log=True, savefig = False)
+# ls.plot_distance(static, log=True, savefig = False)
+# ls.plot_speed(static, savefig = False)
+# calc.curve_pValue(static)
