@@ -15,6 +15,7 @@ import matplotlib.patches as patches
 import numpy as np
 from scipy.optimize import curve_fit #for curve fitting
 import scipy.signal #for smooth curve
+import scipy.stats as stats
 from modules.calc_latency_distance_speed import iterate_all_trials, calc_search_bias
 from modules.config import ROOT_DIR
 
@@ -68,7 +69,7 @@ def smooth_curve(xs, ys):
 Plotting Functions
 '''
 def plot_latency(data, bestfit = False, log = True, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3.5))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3))
     
     x = data['Latency'].index
     y = data['Latency']
@@ -170,7 +171,7 @@ def plot_distance(data, bestfit = False, log = True, savefig = False):
     plt.show()
     
 def plot_speed(data, bestfit = False, log = False, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3))
     
     x = data['Speed'].index
     y = data['Speed']
@@ -212,6 +213,72 @@ def plot_speed(data, bestfit = False, log = False, savefig = False):
     
     if savefig == True:
             plt.savefig(ROOT_DIR+'/figures/AvgSpeed M%s-%s.png'%(data['Speed'].columns[0], data['Speed'].columns[-1]), dpi=600, bbox_inches='tight', pad_inches = 0)
+    plt.show()
+    
+def plot_compare_curves(data1, data2, label1, label2, show_sig = True, log = False, savefig = False):
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
+    
+    y1 = data1.dropna(axis=0)
+    y2 = data2.dropna(axis=0)
+    
+    if len(y1) != len(y2): #if they are not the same length
+        #find min axis and crop
+        y1 = data1.iloc[:min(len(y1), len(y2))]
+        y2 = data2.iloc[:min(len(y1), len(y2))]
+    
+    x = y1.index
+
+    avg1 = np.nanmean(y1, 1)
+    avg2 = np.nanmean(y2, 1)
+    SE1 = np.nanstd(y1, 1)/np.sqrt(y1.shape[1])
+    SE2 = np.nanstd(y2, 1)/np.sqrt(y2.shape[1])
+    
+    
+    line1 = ax.errorbar(x, avg1, yerr=SE1, color='#004E89', label=label1)
+    line2 = ax.errorbar(x, avg2, yerr=SE2, color='#C00021', label=label2)
+    
+    if show_sig:
+        t_test = stats.ttest_ind(y1, y2, axis=1, nan_policy = 'omit')[1]
+        
+        def convert_pvalue_to_asterisks(pvalue):
+            if pvalue <= 0.0001:
+                return "****"
+            elif pvalue <= 0.001:
+                return "***"
+            elif pvalue <= 0.01:
+                return "**"
+            elif pvalue <= 0.05:
+                return "*"
+            return " "
+        
+        pvalue_asterisks = []
+        for p in t_test:
+            stars = convert_pvalue_to_asterisks(p)
+            pvalue_asterisks.append(stars)
+        
+        y_position = np.maximum(np.nanmean(y1, 1), np.nanmean(y2,1))*1.2
+        # y_position = y2.max(axis=1)
+        for idx, pval in enumerate(pvalue_asterisks):
+            # plt.text(x=idx+1, y=y_position, s=pval)
+            ax.annotate(pval, (x[idx], y_position[idx]))
+            print(f'Trial {x[idx]} is {pval}')
+    
+    ax.set_xlabel('Trials', fontsize=13)
+    ax.set_ylabel('Speed (cm/s)', fontsize=13)
+    
+    ax.legend(handles=[line1, line2], fontsize=11, loc='lower right') #legend for average line
+    
+    # ax.set_ylim(5, 40)
+    ax.grid(False) #hide gridlines
+    ax.spines['top'].set_visible(False) 
+    ax.spines['right'].set_visible(False) 
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(2)) #sets x-axis spacing
+    
+    if log:
+        ax.set(yscale="log") #set a logarithmic scale
+    
+    if savefig == True:
+            plt.savefig(ROOT_DIR+f'/figures/CompareCurves_{label1}_vs_{label2}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
     plt.show()
 
 def plot_percent_bar(data, savefig= False):
@@ -263,10 +330,15 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    # static = iterate_all_trials(['2019-09-06','2019-10-07'], continuous= False)
-    # plot_latency(rotate, log = True)
-    # plot_distance(static, bestfit = True, log = True)
+    # static = iterate_all_trials(['2019-05-23','2022-11-04'], continuous= False)
+    # with_cue, no_cue = static['Distance'][['5','6', '7', '8']], static['Distance'][['1','2', '3', '4']]
+    # plot_compare_curves(with_cue, no_cue, 'With Cues', 'No Cues', log = False)
     
-    # d = calc_search_bias(['2019-09-06', '2019-10-07'], '2min')
-    # plot_percent_bar(d)
+    # dark_trial = iterate_all_trials(['2019-06-18','2022-11-04'], training_trials_only = False, continuous= False)
+    # dark, light = dark_trial['Distance'][['5','6','7','8']], dark_trial['Distance'][['1','2','3','4']]
+    # plot_compare_curves(dark, light, 'Trained in Light, Trial in Dark', 'Trained in Light', show_sig = False, log = False)
+    
+    # sex_trial = iterate_all_trials(['2022-08-12','2022-09-20'], training_trials_only = True, continuous= False)
+    # male, female = sex_trial['Speed'][['69','70','71','72']], sex_trial['Speed'][['73','74','75','76']]
+    # plot_compare_curves(male, female, 'Male', 'Female', show_sig = True, log = False)
     pass

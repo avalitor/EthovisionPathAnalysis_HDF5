@@ -29,7 +29,7 @@ def try_or_default(f, default=np.nan, msg=''):
     except:
         if len(msg)>0:
             print(msg)
-        return
+        return default
 
 def get_path_from_exp(exp, eth_file):
     #get excel file path from experiment and ethovision file variables. exp: str, eth_file: int
@@ -47,7 +47,7 @@ class TrialData(): #container to store all trial data and metadata
     def __init__(self, exp='', protocol_name='', protocol_description='',
                   eth_file=[], bkgd_img='', img_extent=[], experimenter='',
                   mouse_number='', mouse_sex = '', day='', trial='', entrance='', target=[],
-                  time=[], r_nose=[], r_center=[], r_tail=[]):
+                  time=[], r_nose=[], r_center=[], r_tail=[], filename=''):
        
         '''
         Metadata:
@@ -133,6 +133,7 @@ class TrialData(): #container to store all trial data and metadata
         self.r_nose = r_nose
         self.r_center = r_center
         self.r_tail = r_tail
+        self.filename = filename
         
         
     def Store(self): #stores all experimental data and metadata as a mat file
@@ -159,7 +160,9 @@ class TrialData(): #container to store all trial data and metadata
         self.protocol_description=m['protocol_description'][0]
         self.eth_file = m['eth_file'][0][0]
         self.bkgd_img=m['bkgd_img'][0]
-        self.img_extent=m['img_extent'][0]
+        if isinstance(m['img_extent'], str): #if is string, convert to floats
+            self.img_extent=[float(x) for x in m['img_extent'][0].split(',')]
+        else: self.img_extent=m['img_extent'][0]
         self.experimenter=m['experimenter'][0]
         self.mouse_number=m['mouse_number'][0]
         self.mouse_sex=m['mouse_sex'][0]
@@ -169,10 +172,17 @@ class TrialData(): #container to store all trial data and metadata
         self.target=m['target'][0]
         if params.check_reverse(self.exp, self.trial) is True:
             self.target_reverse=m['target_reverse'][0]
-        self.time=m['time']
+        self.time=m['time'][0]
         self.r_nose=m['r_nose']
         self.r_center=m['r_center']
         self.r_tail=m['r_tail']
+        self.filename=m['filename'][0]
+        if "velocity" in m: #checks if file has velocity info
+            self.velocity = m['velocity'][0]
+        if 'r_arena_holes' in m:
+            self.r_arena_holes = m['r_arena_holes']
+        if 'arena_circle' in m:
+            self.arena_circle = m['arena_circle'][0]
         
     def Update(self):
         save_path = os.path.join(PROCESSED_FILE_DIR, self.exp, self.filename)
@@ -220,6 +230,7 @@ def get_excel_data(exp, eth_file):
         t.r_nose = try_or_default(lambda: d[['X nose','Y nose']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X nose or Y nose' )
         t.r_center = try_or_default(lambda: d[['X center','Y center']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X center or Y center' )
         t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X tail or Y tail' )
+        t.velocity = try_or_default(lambda: d['Velocity'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Velocity' )
         
         #opens helper excel to get metadata
         i = pd.read_csv(fname2,header=0, index_col = 0)
@@ -230,7 +241,7 @@ def get_excel_data(exp, eth_file):
         t.mouse_sex = try_or_default(lambda: i.loc[exp,['mouse_sex']].to_numpy()[0], default='', msg=err_msg%'Mouse Sex excel')
         
         #determies data fromm parameter file
-        t.bkgd_img = try_or_default(lambda: params.set_background_image(t.exp, params.check_reverse(t.exp, t.trial)), default='', msg=err_msg%'bkgd_img' )
+        t.bkgd_img = try_or_default(lambda: params.set_background_image(t.exp, params.check_reverse(t.exp, t.trial), t.entrance, t.trial), default='', msg=err_msg%'bkgd_img' )
         t.target = try_or_default(lambda: params.set_target(t.exp, t.entrance, t.trial), default=np.array([]), msg=err_msg%'Target' )
         if params.check_reverse(t.exp, t.trial) is True: #annotates false target, optional
             t.target_reverse = try_or_default(lambda: params.set_reverse_target(t.exp, t.entrance, t.trial), default=np.array([]), msg=err_msg%'Reverse Target' )
@@ -241,45 +252,48 @@ def get_excel_data(exp, eth_file):
     
     return import_excel(fname, DOCU)
 
-def manual_single_excel_import(path):
+def manual_single_excel_import(path, input_dict):
     
     print('     ... reading experiment excel file %s' %(path))
     
-    exp = input('Enter exp date')
+    exp = 'SingleTrial' #This determines the folder where the file is stored
     
     t = TrialData(exp = exp)
     
-    t.mouse_number = input('Enter mouse number')
-    t.day = input('Enter Day')
-    t.trial = input('Enter Trial')
-    t.entrance = input('Enter entrance')
-    t.protocol_name = input('enter protocol name')
-    t.protocol_description = input('enter protocol description')
-    t.img_extent = input('enter image extent')
-    t.experimenter = input('enter experimenter name')
+    t.eth_file = path.split('-')[-1]
+    t.mouse_number = input_dict['mouse_number']
+    t.mouse_sex = input_dict['mouse_sex']
+    t.day = '1'#input('Enter Day')
+    t.trial = input_dict['trial']
+    t.entrance = 'na' #input('Enter entrance')
+    t.protocol_name = input_dict['protocol_name']
+    t.protocol_description = input_dict['protocol_description']
+    t.img_extent = input_dict['img_extent']
+    t.experimenter = 'Kelly'#input('enter experimenter name')
     
-    t.bkgd_img = input('enter background image file')
-    t.target = input('enter target coordinates')
+    t.bkgd_img = input_dict['bkgd_img']
+    t.target = 'none'#input('enter target coordinates')
     t.filename = ('hfm_%s_M%s_%s.mat' %(t.exp, t.mouse_number, t.trial))
     
     #accomadates version change in ethovision file, change header lengh if experiment was done after 2019
-    nrows_header = 39 #or 37 if before 2019
+    nrows_header = 36 #39 if all info is there, or 37 if before 2019
     
     err_msg = ' *** ERROR  :::  %s data not found in ' + os.path.basename(path)
     
     #opens trial header to get metadata NOT DONE
-    h = pd.read_excel(path,nrows=nrows_header,index_col=0,usecols='A,B')
-    t.mouse_number = try_or_default(lambda: h.loc['Mouse Number'][0], default=input('Enter mouse number'), msg=err_msg%'Mouse Number' )
-    t.day = try_or_default(lambda: h.loc['Day'][0], default='', msg=err_msg%'Day' )
-    t.trial = try_or_default(lambda: h.loc['Trial'][0], default='', msg=err_msg%'Trial' )
-    t.entrance = try_or_default(lambda: h.loc['Start Location'][0], default='', msg=err_msg%'Start Location' )
+    # h = pd.read_excel(path,nrows=nrows_header,index_col=0,usecols='A,B')
+    # t.mouse_number = try_or_default(lambda: h.loc['Mouse Number'][0], default=input('Enter mouse number'), msg=err_msg%'Mouse Number' )
+    # t.day = try_or_default(lambda: h.loc['Day'][0], default='', msg=err_msg%'Day' )
+    # t.trial = try_or_default(lambda: h.loc['Trial'][0], default='', msg=err_msg%'Trial' )
     
     #opens trial to get data
     d = pd.read_excel(path,na_values=['-'],header=0, skiprows = nrows_header)
     t.time = try_or_default(lambda: d['Recording time'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Recording time' )
-    t.r_nose = try_or_default(lambda: d[['X nose','Y nose']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X nose or Y nose' )
+    t.r_nose = try_or_default(lambda: d[['X nose','Y nose']][1:].to_numpy().astype(float), default=np.array([0]), msg=err_msg%'X nose or Y nose' )
     t.r_center = try_or_default(lambda: d[['X center','Y center']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X center or Y center' )
-    t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X tail or Y tail' )
+    t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([0]), msg=err_msg%'X tail or Y tail' )
+    t.velocity = try_or_default(lambda: d['Velocity'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Velocity' )
+    
     return t
 
 
@@ -292,8 +306,11 @@ if __name__ == '__main__':
     # objs[0].Load('2019-09-06', 10, '17')
     # objs[1].Load('2019-09-06', 10, 'R180 1')
     
-    test = manual_single_excel_import(RAW_FILE_DIR + 'Raw data-LED_test-Trial     3.xlsx')
+    # datum = manual_single_excel_import(RAW_FILE_DIR + '\\2021-11-19_Raw Trial Data\Raw data-Hidden Food Maze-19Nov2021-Trial    79.xlsx')
+    # datum.Store()
     
+    data = TrialData()
+    data.Load('SingleTrial', 'Nas1', '1')
     pass
 
 

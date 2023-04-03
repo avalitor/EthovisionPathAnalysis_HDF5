@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg #for plotting the image
 import matplotlib.colors as mcolors #for heatmap colours
 import matplotlib.patches as patches #to crop image
-from scipy.ndimage.filters import gaussian_filter #for heatmap
+from scipy.ndimage import gaussian_filter #for heatmap
 from modules import lib_process_data_to_mat as plib
 from modules import lib_experiment_parameters as params
 from modules.config import ROOT_DIR
@@ -59,19 +59,24 @@ def rotate(coords, center, degrees):
 
 #gets the center of a set of coordinates, useful for coordinate rotation but only if coordinates cover the full extent of the arena
 def get_arena_center(coords):
-    x = coords[:,0]
-    y = coords[:,1]
-    x_center = np.nanmax(x)-((np.nanmax(x)-np.nanmin(x))/2)
-    y_center = np.nanmax(y)-((np.nanmax(y)-np.nanmin(y))/2)
+    if np.isnan(coords).all():
+        x_center, y_center = 0,0
+        print("WARNING: One or more trials are empty")
+    else:
+        x = coords[:,0]
+        y = coords[:,1]
+        x_center = np.nanmax(x)-((np.nanmax(x)-np.nanmin(x))/2)
+        y_center = np.nanmax(y)-((np.nanmax(y)-np.nanmin(y))/2)
     return (x_center,y_center)
 
 def get_coords_timeLimit(trial, time_limit):
+    assert time_limit in ['all','2min','5min'], "time_limit must be 'all', '2min','5min'"
     if time_limit == 'all':
-        idx_end = len(trial.time[0])
+        idx_end = len(trial.time)
     if time_limit == '2min':
-        idx_end = np.searchsorted(trial.time[0], 120.)
+        idx_end = np.searchsorted(trial.time, 120.)
     if time_limit == '5min':
-        idx_end = np.searchsorted(trial.time[0], 300.)
+        idx_end = np.searchsorted(trial.time, 300.)
         
     # x = trial.r_nose[:idx_end,0]
     # y = trial.r_nose[:idx_end,1]
@@ -93,7 +98,8 @@ def make_heatmap(x, y, s, bins=1000):
 Plotting Functions
 '''
 
-def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, crop_interval = False, returnpath = False, continuous = False, savefig = False):
+def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end_custom = False, crop_interval = False, 
+                     returnpath = False, continuous = False, savefig = False):
     '''
     Plots r_nose coordinates on an image based on data in the class TrialData
     
@@ -101,6 +107,8 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
     ----------
     trialclass : class
         Object class that contains all trial info
+    show_target : bool, optional
+        draw target circle
     cropcoords: bool, optional
         crops the trajectory when the mouse reaches the target
     crop_end_custom: bool or tuple, optional
@@ -119,7 +127,7 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
 
     #import image
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
-    ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
+    im = ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
     
     line_colour = '#004E89'
     
@@ -153,6 +161,9 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
         #get start and end index
         idx_start = coords_to_target(trialclass.r_nose, crop_interval[0])
         idx_end = coords_to_target(trialclass.r_nose, crop_interval[1])
+        if idx_start > idx_end: #reverse them if the mouse arrives at the second index before the first
+            idx_start = coords_to_target(trialclass.r_nose, crop_interval[1])
+            idx_end = coords_to_target(trialclass.r_nose, crop_interval[0])
         #plot path between coordinates
         ax.plot(trialclass.r_nose[idx_start:idx_end+1,0], trialclass.r_nose[idx_start:idx_end+1,1], ls='-', color = line_colour)
             
@@ -172,27 +183,32 @@ def plot_single_traj(trialclass, cropcoords = True, crop_end_custom = False, cro
 #        ax.scatter(x, y, s=1.5, c = N, cmap=cm.jet_r, edgecolor='none')
 
     #annotate image
-    target = plt.Circle((trialclass.target), 2.5, color='b')
-    ax.add_artist(target)
+    if show_target == True:
+        target = plt.Circle((trialclass.target), 2.5, color='b')
+        ax.add_artist(target)
     
-    # test = plt.Circle((-37.48, -11.65), 2.5, color='orange')
-    # ax.add_artist(test)
+    if hasattr(trialclass, 'arena_circle'):
+        #crops the image to 130% of coordinate limits
+        patch = patches.Circle(trialclass.arena_circle[:2], 
+                               radius=(trialclass.arena_circle[2]*1.3), 
+                               transform=ax.transData)
+        im.set_clip_path(patch)
+    else: print('Missing arena circle coordinates')
     
     if params.check_reverse(trialclass.exp, trialclass.trial) is True: #annotates false target, optional
         prev_target = plt.Circle((params.set_reverse_target(trialclass.exp, trialclass.entrance, trialclass.trial)), 2.5, color='r')
         ax.add_artist(prev_target)
 
     # plt.style.use('default')
-    # Remove ticks
-    ax.set_xticks([])
-    ax.set_yticks([])
+    
+    ax.axis('off') #remove border
 
     if savefig == True:
         plt.savefig(ROOT_DIR+'/figures/Plot_%s_M%s_%s.png'%(trialclass.protocol_name, trialclass.mouse_number, trialclass.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
         
     plt.show()
     
-def plot_multi_traj(trialclass_list, align_entrance = True, crop_rev = False, crop_end_custom = False, savefig = False):
+def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False, crop_rev = False, crop_end_custom = False, crop_interval = False, continuous = False, savefig = False):
     '''
     Plots multiple trajectories on a single image
     If the targets rotate with the entrances, automatically align the trajectories so the targets are the same
@@ -203,10 +219,14 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_rev = False, cr
         List of class TrialData
     align_entrance : bool, optional
         aligns all rotating entrances to the same entrance
+    crop_target: bool
+        crops each trajectory at target
     crop_rev: bool, optional
         crops trajectory at reverse target, if it exists
     crop_end_custom : bool or list of tuples, optional
         crops each trajectory at custom coordinate
+    crop_interval: bool or list of tuples, optional
+        crops the trajectory between two coordinates
     savefig : bool, optional
         Save this figure as a png image. The default is False.
     '''
@@ -215,7 +235,7 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_rev = False, cr
 
     #import image
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass_list[0].bkgd_img))
-    ax.imshow(img, extent=trialclass_list[0].img_extent) #plot image to match ethovision coordinates
+    im = ax.imshow(img, extent=trialclass_list[0].img_extent) #plot image to match ethovision coordinates
     
     if align_entrance:
         if all(trialclass_list[0].target != trialclass_list[1].target): #if the targets change between trials
@@ -223,41 +243,83 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_rev = False, cr
             temp.Load(trialclass_list[0].exp, '*', 'Probe')
             origin = get_arena_center(temp.r_nose) #get center of rotation
             for t in trialclass_list: #rotate all coordinates so they align
+                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
                 if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
                 elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
                 elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
-                else: t.r_nose_r = t.r_nose
+                # else: t.r_nose_r = t.r_nose
     
     colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
     # linestyles = iter(['-', '--', ':'])
     if isinstance(crop_end_custom, bool) == False: #checks to see if we are using custom crop coordinates
         if type(crop_end_custom) is not list: print('Error: crop custom not a list') #checks to make sure it is a list
         else: target_custom = iter(crop_end_custom) #sets up an iterating coordinate
+    if isinstance(crop_interval, bool) == False:
+        if type(crop_interval) is not list: print('Error: crop custom not a list') #checks to make sure it is a list
+        else: 
+            targets_custom = iter(crop_interval)
+            
     
     for t in trialclass_list:
-        if len(t.time)>0: #checks to see if list data is not empty
-            
-            if crop_rev == True:
-                try : index = coords_to_target(t.r_nose, t.target_reverse)
-                except:index = coords_to_target(t.r_nose, t.target)
-            elif isinstance(crop_end_custom, bool) == False:
-                index = coords_to_target(t.r_nose, next(target_custom))
-            else: index = coords_to_target(t.r_nose, t.target)
-
-            #plot path to target
-            try: ax.plot(t.r_nose_r[:index+1,0], t.r_nose_r[:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
-            except: ax.plot(t.r_nose[:index+1,0], t.r_nose[:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
+        if len(t.time)==0: #checks to see if list data is not empty
+            raise ValueError("the list contains empty data")
         
+        if crop_rev == True:
+            try : index = coords_to_target(t.r_nose, t.target_reverse)
+            except:index = coords_to_target(t.r_nose, t.target)
+        elif isinstance(crop_end_custom, bool) == False:
+            index = coords_to_target(t.r_nose, next(target_custom))
+        elif isinstance(crop_interval, bool) == False: #check if we want to crop trajectory between two points
+            #get start and end index
+            target_coords = next(targets_custom)
+            idx_start = coords_to_target(t.r_nose, target_coords[0])
+            index = coords_to_target(t.r_nose, target_coords[1])
+            if idx_start > index: #reverse them if the mouse arrives at the second index before the first
+                temp = idx_start
+                idx_start = index
+                index = temp
+            if hasattr(t, 'r_nose_r'): pass
+            else:
+                #annotate the two points
+                point1 = plt.Circle((target_coords[0]), 2.5, color='b', zorder=10)
+                point2 = plt.Circle((target_coords[1]), 2.5, color='b', zorder=10)
+                ax.add_artist(point1)
+                ax.add_artist(point2)
+            
+        else: index = coords_to_target(t.r_nose, t.target)
+        
+        #gets starting index if plotting continuous trajectory
+        if continuous == True: idx_start = continuous_coords_to_target(t, index)
+        elif isinstance(crop_interval, bool) == True: idx_start = 0
+
+        #plot path to target
+        try: ax.plot(t.r_nose_r[idx_start:index+1,0], t.r_nose_r[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
+        except: ax.plot(t.r_nose[idx_start:index+1,0], t.r_nose[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
+    
 
     #annotate image
-    target = plt.Circle((trialclass_list[0].target), 2.5, color='b')
-    ax.add_artist(target)
+    if crop_rev:
+        target = plt.Circle((trialclass_list[0].target_reverse), 2.5, color='b')
+        ax.add_artist(target)
+    elif crop_end_custom:
+        target = plt.Circle((crop_end_custom), 2.5, color='b')
+        ax.add_artist(target)
+    elif crop_target:
+        target = plt.Circle((trialclass_list[0].target), 2.5, color='b')
+        ax.add_artist(target)
+    
+    
+    if hasattr(trialclass_list[0], 'arena_circle'):
+        #crops the image to 130% of coordinate limits
+        patch = patches.Circle(trialclass_list[0].arena_circle[:2], 
+                               radius=(trialclass_list[0].arena_circle[2]*1.3), 
+                               transform=ax.transData)
+        im.set_clip_path(patch)
+    else: print('Missing arena circle coordinates')
     
 
     # plt.style.use('default')
-    # Remove ticks
-    ax.set_xticks([])
-    ax.set_yticks([])
+    ax.axis('off') #remove border
 
     if savefig == True:
         plt.savefig(ROOT_DIR+'/figures/Plot_%s_Trial%s-%s_Combo.png'%(trialclass_list[0].protocol_name, trialclass_list[0].trial, trialclass_list[1].trial), 
@@ -410,10 +472,6 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
     if returnpath == True:
         ax.plot(trialclass.r_nose[index:,0], trialclass.r_nose[index:,1], ls='-', color = '#717171')
 
-    #plot path with colours
-#        N = np.linspace(0, 10, np.size(y))
-#        ax.scatter(x, y, s=1.5, c = N, cmap=cm.jet_r, edgecolor='none')
-
     #annotate image
     target = plt.Circle((trialclass.target), 2.5, color='b')
     ax.add_artist(target)
@@ -444,6 +502,10 @@ if __name__ == '__main__': #only runs this function if the script top level AKA 
     exp = plib.TrialData()
     exp.Load('2022-10-11', '1', 'Probe 2')
     print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+    plot_heatmap(exp, '2min')
 
-    plot_2_target_analysis(exp, cropcoords = True)
+
+    # plot_2_target_analysis(exp, cropcoords = True)
+    
+    # plot_single_traj(data, show_target=False, cropcoords=False)
     pass

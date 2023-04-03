@@ -32,12 +32,15 @@ def check_reverse(experiment, trial_condition): #check if trial is a reversal
         elif trial_condition.isdigit():
             if int(trial_condition) > 18: is_reverse = True
         else: is_reverse = False
-   
+    if experiment == '2023-02-13':
+        if trial_condition.startswith(u'Probe'): is_reverse = True
+        elif trial_condition.isdigit() is True and int(trial_condition) <= 12: is_reverse = False
+        else: is_reverse = True
     return is_reverse
 
 #fetches background image
-def set_background_image(experiment, is_reverse):
-    if experiment == '2019-09-06' or experiment == '2019-10-07' or experiment == '2019-06-18': background = 'BKGDimage-pilot.png'
+def set_background_image(experiment, is_reverse, entrance, trial_condition):
+    if experiment == '2019-05-23' or experiment == '2019-09-06' or experiment == '2019-10-07' or experiment == '2019-06-18': background = 'BKGDimage-pilot.png'
     if experiment == '2019-12-11': background = 'BKGDimage-localCues.png'
     if experiment == '2021-03-08': background = 'BKGDimage-localCues_clear.png'
     if experiment == '2021-05-06': background = 'BKGDimage-localCues_Letter.png'
@@ -59,9 +62,23 @@ def set_background_image(experiment, is_reverse):
         if is_reverse: background = 'BKGDimage_asymmRev.png'
         else: background = 'BKGDimage_asymm2.png'
     if experiment == '2022-08-12': background = 'BKGDimage-220812.png'
-    if experiment == '2022-09-20': background = 'BKGDimage-20220920.png'
+    if experiment == '2022-09-20': 
+        if trial_condition == 'Probe2': background = 'BKGDimage-20220920-probe2.png'
+        else: background = 'BKGDimage-20220920.png'
     if experiment == '2022-10-11': background = 'BKGDimage-20221011.png'
     if experiment == '2022-11-04': background = 'BKGDimage-20221104.png'
+    if experiment == '2023-01-11': background = 'BKGDimage-20230111.png'
+    if experiment == '2023-02-13':
+        if trial_condition.isdigit() is True or trial_condition == 'Probe' or trial_condition == 'Probe2':
+            if entrance == u'SW':
+                background = 'BKGDimage-barrier1.png'
+            if entrance == u'SE':
+                background = 'BKGDimage-barrier2.png'
+            if entrance == u'NE':
+                background = 'BKGDimage-barrier3.png'
+            if entrance == u'NW':
+                background = 'BKGDimage-barrier4.png'
+        else: background = 'BKGDimage-20230111.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -162,7 +179,7 @@ def set_target(experiment, entrance, trial_condition):
     elif experiment == '2022-02-13': target_coords = 28.82, 2.99
     elif experiment == '2022-03-21': target_coords = 28.71, 3.45
     elif experiment == '2022-08-12':
-        if trial_condition.isdigit() is True and int(trial_condition) <= 18: #target A
+        if (trial_condition.isdigit() is True and int(trial_condition) <= 18) or trial_condition == 'Probe': #target A
             if entrance == u'SW':
                 target_coords = 39.68, 11.97
             if entrance == u'SE':
@@ -209,7 +226,7 @@ def set_target(experiment, entrance, trial_condition):
             if entrance == u'NW':
                 target_coords = -22.71, 22.71
     elif experiment == '2022-10-11':
-        if trial_condition.isdigit() is True and int(trial_condition) <= 18: #target A
+        if (trial_condition.isdigit() is True and int(trial_condition) <= 18) or trial_condition == 'Probe': #target A
             if entrance == u'SW':
                 target_coords = -39.10, -11.94
             if entrance == u'SE':
@@ -236,6 +253,45 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = -38.11, -12.13
         if entrance == u'NW':
             target_coords = 11.65, -38.74 
+    elif experiment == '2023-01-11':
+        if trial_condition.startswith(u'R') == True:
+            if entrance == u'SW':
+                target_coords = 38.30, 12.06
+            if entrance == u'SE':
+                target_coords = -12.34, 39.29 
+            if entrance == u'NE':
+                target_coords = -39.01, -11.63
+            if entrance == u'NW':
+                target_coords = 11.49, -38.01
+        else:
+            if entrance == u'SW':
+                target_coords = -39.01, -11.63
+            if entrance == u'SE':
+                target_coords = 11.49, -38.01
+            if entrance == u'NE':
+                target_coords = 38.30, 12.06
+            if entrance == u'NW':
+                target_coords = -12.34, 39.29 
+    elif experiment == '2023-02-13':
+        if (trial_condition.isdigit() is True and int(trial_condition) <= 12) or trial_condition == 'Probe': #target A
+            if entrance == u'SW':
+                target_coords = -39.01, -11.63
+            if entrance == u'SE':
+                target_coords = 11.63, -37.87
+            if entrance == u'NE':
+                target_coords = 38.01, 12.34
+            if entrance == u'NW':
+                target_coords = -12.48, 39.43  
+        else: #target B
+            if entrance == u'SW':
+                target_coords = 22.98, 18.58
+            if entrance == u'SE':
+                target_coords = -18.58, 23.55
+            if entrance == u'NE':
+                target_coords = -23.26, -18.01
+            if entrance == u'NW':
+                target_coords = 17.73, -22.13
+        
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
@@ -352,4 +408,32 @@ def set_reverse_target(experiment, entrance, trial_condition):
             reverse_target_coords = -11.65, 38.27
         if entrance == u'NW':
             reverse_target_coords = -38.11, -12.13
+    elif experiment == '2023-01-11':
+        if entrance == u'SW':
+            reverse_target_coords = -39.01, -11.63 
+        if entrance == u'SE':
+            reverse_target_coords = 11.49, -38.01
+        if entrance == u'NE':
+            reverse_target_coords = 38.30, 12.06
+        if entrance == u'NW':
+            reverse_target_coords = -12.34, 39.29
+    elif experiment == '2023-02-13':
+        if trial_condition == "Probe":
+            if entrance == u'SW':
+                reverse_target_coords = 22.98, 18.58
+            if entrance == u'SE':
+                reverse_target_coords = -18.58, 23.55
+            if entrance == u'NE':
+                reverse_target_coords = -23.26, -18.01
+            if entrance == u'NW':
+                reverse_target_coords = 17.73, -22.13
+        else:
+            if entrance == u'SW':
+                reverse_target_coords = -39.01, -11.63
+            if entrance == u'SE':
+                reverse_target_coords = 11.63, -37.87
+            if entrance == u'NE':
+                reverse_target_coords = 38.01, 12.34
+            if entrance == u'NW':
+                reverse_target_coords = -12.48, 39.43  
     return reverse_target_coords

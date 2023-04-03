@@ -39,7 +39,6 @@ r_start (coordinates)
 r_target_alt
 start_quadrant (1-4)
 trial_name (Trial____37)
-velocity
 
 '''
 kelly_data['arena_pic_bottom'] = kelly_data['img_extent'][0][2]

@@ -18,19 +18,21 @@ PLOT PERCENT BAR
     
 Rotating Entrances
 '''
-# d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], '2min')
+# d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], 'Probe', '2min')
 # ls.plot_percent_bar(d)
 
 '''
 Static Entrances
 '''
-# d = calc.calc_search_bias(['2019-09-06', '2019-10-07'], '2min')
+# d = calc.calc_search_bias(['2019-09-06', '2019-10-07'], 'Probe', '2min')
 # ls.plot_percent_bar(d)
 
 '''3 Local Cues'''
-# d = calc.calc_search_bias(['2019-12-11','2021-08-11'], '2min')
+# d = calc.calc_search_bias(['2019-12-11','2021-08-11'], 'Probe', '2min')
 # ls.plot_percent_bar(d)
 
+# d = calc.calc_search_bias(['2022-02-13'], 'Probe', '2min', 15.)
+# ls.plot_percent_bar(d)
 
 '''
 LATENCY, DISTANCE, SPEED LEARNING CURVES
@@ -38,26 +40,20 @@ LATENCY, DISTANCE, SPEED LEARNING CURVES
 
 Single trial REL data
 '''
-exp = plib.TrialData()
-exp.Load('2019-10-07', '16', 'R180 1')
-print(f'Mouse {exp.mouse_number} Trial {exp.trial}')
-latency, distance, speed = calc.calc_lat_dist_sped(exp, custom_target=exp.target_reverse)
+# exp = plib.TrialData()
+# exp.Load('2019-09-06', '12', 'R180 1')
+# print(f'Mouse {exp.mouse_number} Trial {exp.trial}')
+# latency, distance, speed = calc.calc_lat_dist_sped(exp, custom_target=exp.target_reverse)
 
 '''
 
-Rotating & Static Entrances
+Whole experiemnt before probe
 '''
-# rotate = calc.iterate_all_trials(['2021-07-16', '2021-11-15'], continuous= False)
+# rotate = calc.iterate_all_trials(['2023-02-13'], continuous= False)
 # ls.plot_latency(rotate, log=True, savefig = False)
 # ls.plot_distance(rotate, log=True, savefig = False)
 # ls.plot_speed(rotate, savefig = False)
 # calc.curve_pValue(rotate)
-
-# static = calc.iterate_all_trials(['2019-09-06','2019-10-07'], training_trials_only = False)
-# ls.plot_latency(static, log=True, savefig = False)
-# ls.plot_distance(static, log=True, savefig = False)
-# ls.plot_speed(static, savefig = False)
-# calc.curve_pValue(static)
 
 '''
 3 Local Cues
@@ -77,23 +73,22 @@ Rotating & Static Entrances
 # ls.plot_speed(ttg, bestfit=False, savefig = False)
 # calc.curve_pValue(ttg)
 
-# ttg = calc.iterate_all_trials(['2022-09-20'], continuous= False)
-# ls.plot_latency(ttg, bestfit=False, log=True, savefig = False)
-# ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
-# ls.plot_speed(ttg, bestfit=False, savefig = False)
-# calc.curve_pValue(ttg)
+'''Compare 2 learning curves'''
+# dark_trial = calc.iterate_all_trials(['2023-01-11','2022-08-12'], training_trials_only = True, continuous= False)
+# dark, light = dark_trial['Distance'][['77','78','79','80']], dark_trial['Distance'][['69','70','71','72']]
+# ls.plot_compare_curves(dark, light, 'Trained in Dark', 'Trained in Light', show_sig = True, log = False)
 
+# sex_trial = calc.iterate_all_trials(['2022-08-12','2022-09-20'], training_trials_only = True, continuous= False)
+# male, female = sex_trial['Speed'][['69','70','71','72']], sex_trial['Speed'][['73','74','75','76']]
+# ls.plot_compare_curves(male, female, 'Male', 'Female', show_sig = True, log = False)
 
-'''2 Target REL: Ciara's knockout experiment'''
-# ttg = calc.iterate_all_trials(['2022-10-11'], continuous= False)
-# ls.plot_latency(ttg, bestfit=False, log=True, savefig = False)
-# ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
-# ls.plot_speed(ttg, bestfit=False, savefig = False)
-# calc.curve_pValue(ttg)
+'''
+DISTANCE BETWEEN TARGETS
+************************
+'''
+exp = plib.TrialData()
+exp.Load('2023-02-13', 84, 'Probe3')
+max_spread =  calc.calc_traj_spread(exp) #calculates max distance from optimal line
 
-'''Amarpreet experiment'''
-# static = calc.iterate_all_trials(['2022-11-04'], continuous= False)
-# ls.plot_latency(static, log=True, savefig = False)
-# ls.plot_distance(static, log=True, savefig = False)
-# ls.plot_speed(static, savefig = False)
-# calc.curve_pValue(static)
+dist_AB = calc.calc_dist_bw_points(exp.r_center, exp.target_reverse, exp.target) #calculate distance between two points
+print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_AB, 2)} cm')
