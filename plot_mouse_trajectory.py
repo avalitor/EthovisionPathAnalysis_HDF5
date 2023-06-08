@@ -13,11 +13,11 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-# exp = plib.TrialData()
-# exp.Load('2022-09-20', 73, 'Probe')
-# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+exp = plib.TrialData()
+exp.Load('2023-05-01', '1', '1')
+print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-# pltlib.plot_single_traj(exp, show_target=True, cropcoords = False, savefig=False)
+pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
@@ -27,11 +27,11 @@ from modules import lib_plot_mouse_trajectory as pltlib
 # pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse, continuous = False, savefig = False)
 
 '''plots single trajectory between two points'''
-exp = plib.TrialData()
-exp.Load('2023-02-13', 82, 'Probe4')
-print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+# exp = plib.TrialData()
+# exp.Load('2023-02-13', 82, 'Probe4')
+# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-pltlib.plot_single_traj(exp, crop_interval=(exp.target, exp.target_reverse), savefig = True)
+# pltlib.plot_single_traj(exp, crop_interval=(exp.target, exp.target_reverse), savefig = True)
 
 
 '''plots multiple trajectories and REL'''

@@ -284,7 +284,8 @@ def calc_spread_iterate_exp(experiments, show_load = True):
     for t in experiments:
         spread =  calc_traj_spread(t) #calculates max distance from optimal line
         spread_max = np.nanmax(np.abs(spread))
-        spreads.at[t.trial, t.mouse_number] = spread_max
+        spread_avg = np.nanmean(np.abs(spread))
+        spreads.at[t.trial, t.mouse_number] = spread_avg
         
         dist_AB = calc_dist_bw_points(t.r_center, t.target, t.target_reverse) #calculate distance travelled between two points
         distances.at[t.trial, t.mouse_number] = dist_AB
@@ -350,23 +351,8 @@ def iterate_angle_difference(target_vector, mouse_vector):
 if __name__ == '__main__':
     
     exp = plib.TrialData()
-    exp.Load('2023-02-13', 82, 'Probe4')
-    arena_center = exp.arena_circle[:2]
-    target_v, target_d, mouse_v, mouse_d = vector_to_target(exp, coord_target = pltlib.rotate(exp.target, arena_center, 90), coord_start = None, coord_end = exp.target_reverse)
-    
-    angle_difference = iterate_angle_difference(target_v, mouse_v)
-    
-    idx_end = pltlib.coords_to_target(exp.r_nose, exp.target_reverse)
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(nrows=2, figsize=(8, 6))
-    ax[0].plot(exp.time[:idx_end], mouse_d)  # plot direction vs time
-    ax[1].plot(exp.time[:idx_end], angle_difference)  # plot difference in direction vs time
-    ax[0].set_title('Mouse: %s, Trial %s' % (exp.mouse_number, exp.trial), size=14)
-    ax[1].set_title('Angle difference vs time')
-    ax[0].set_ylabel('degree')
-    ax[1].set_ylabel('degree')
-    plt.xlabel('time(s)')
-    plt.show()
+    exp.Load('2019-10-07', '16', 'Probe')
+    dwells = compare_target_dwell(exp)
     
     
     

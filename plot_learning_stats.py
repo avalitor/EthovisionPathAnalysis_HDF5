@@ -18,8 +18,8 @@ PLOT PERCENT BAR
     
 Rotating Entrances
 '''
-# d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], 'Probe', '2min')
-# ls.plot_percent_bar(d)
+d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], 'Probe', '2min')
+ls.plot_percent_bar(d)
 
 '''
 Static Entrances
@@ -86,9 +86,9 @@ Whole experiemnt before probe
 DISTANCE BETWEEN TARGETS
 ************************
 '''
-exp = plib.TrialData()
-exp.Load('2023-02-13', 84, 'Probe3')
-max_spread =  calc.calc_traj_spread(exp) #calculates max distance from optimal line
+# exp = plib.TrialData()
+# exp.Load('2023-02-13', 84, 'Probe3')
+# max_spread =  calc.calc_traj_spread(exp) #calculates max distance from optimal line
 
-dist_AB = calc.calc_dist_bw_points(exp.r_center, exp.target_reverse, exp.target) #calculate distance between two points
-print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_AB, 2)} cm')
+# dist_AB = calc.calc_dist_bw_points(exp.r_center, exp.target_reverse, exp.target) #calculate distance between two points
+# print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_AB, 2)} cm')

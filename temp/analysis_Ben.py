@@ -21,35 +21,36 @@ import modules.lib_plot_mouse_trajectory as pltlib
 #%%
 '''plot single trajectory to target'''
 exp = plib.TrialData()
-exp.Load('2022-08-12', '69', 'Probe2')
+exp.Load('2023-01-11', '77', 'Probe')
 print(f'Mouse {exp.mouse_number} Trial {exp.trial}')
-pltlib.plot_single_traj(exp, crop_end_custom = exp.target_reverse, savefig=False)
+pltlib.plot_single_traj(exp, crop_end_custom = exp.target, savefig=False)
 
 #%%
 '''plot single traj between targets'''
 exp = plib.TrialData()
-exp.Load('2022-09-20', 75, 'Probe2')
+exp.Load('2022-08-12', '69', 'Probe2')
 dist_AB = calc.calc_dist_bw_points(exp.r_center, exp.target_reverse, exp.target) #calculate distance between two points
 print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_AB, 2)} cm')
 pltlib.plot_single_traj(exp, crop_interval=(exp.target_reverse, exp.target), savefig=False)
 
 '''plot single traj between random targets'''
-# pltlib.plot_single_traj(exp, crop_interval=(pltlib.rotate(exp.target_reverse, exp.arena_circle[:2], 270), pltlib.rotate(exp.target, exp.arena_circle[:2], 270)), savefig=False)
+pltlib.plot_single_traj(exp, crop_interval=(pltlib.rotate(exp.target_reverse, exp.arena_circle[:2], 270), pltlib.rotate(exp.target, exp.arena_circle[:2], 270)), savefig=False)
+dist_random = calc.calc_dist_bw_points(exp.r_center, pltlib.rotate(exp.target_reverse, exp.arena_circle[:2], 270), pltlib.rotate(exp.target, exp.arena_circle[:2], 270)) #calculate distance between two points
+print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_random, 2)} cm')
 
 #%%
 '''Plot multiple trajectories between targets
 2-target male experiment'''
 exps = [plib.TrialData() for i in range(4)]
-exps[0].Load('2022-08-12', 69, 'Probe2')
-exps[1].Load('2022-08-12', 70, 'Probe2')
-exps[2].Load('2022-08-12', 71, 'Probe2')
-exps[3].Load('2022-08-12', 72, 'Probe2')
+# exps[0].Load('2022-08-12', 69, 'Probe2')
+# exps[1].Load('2022-08-12', 70, 'Probe2')
+# exps[2].Load('2022-08-12', 71, 'Probe2')
+# exps[3].Load('2022-08-12', 72, 'Probe2')
 
-# exps[0].Load('2022-09-20', 73, 'Probe2')
-# exps[1].Load('2022-09-20', 74, 'Probe2')
-# exps[2].Load('2022-09-20', 75, 'Probe2')
-# exps[3].Load('2022-09-20', 76, 'Probe2')
-
+exps[0].Load('2022-09-20', 73, 'Probe2')
+exps[1].Load('2022-09-20', 74, 'Probe2')
+exps[2].Load('2022-09-20', 75, 'Probe2')
+exps[3].Load('2022-09-20', 76, 'Probe2')
 
 # pltlib.plot_multi_traj(exps, crop_rev= True, savefig = False) #crop at reverse target
 
@@ -73,15 +74,16 @@ exps = [plib.TrialData() for i in range(4)]
 # exps[2].Load('2023-02-13', 83, 'Probe2')
 # exps[3].Load('2023-02-13', 84, 'Probe2')
 
-exps[0].Load('2023-02-13', 81, 'Probe3')
-exps[1].Load('2023-02-13', 82, 'Probe3')
-exps[2].Load('2023-02-13', 83, 'Probe3')
-exps[3].Load('2023-02-13', 84, 'Probe3')
+# exps[0].Load('2023-02-13', 81, 'Probe3')
+# exps[1].Load('2023-02-13', 82, 'Probe3')
+# exps[2].Load('2023-02-13', 83, 'Probe3')
+# exps[3].Load('2023-02-13', 84, 'Probe3')
 
-# exps[0].Load('2023-02-13', 81, 'Probe4')
-# exps[1].Load('2023-02-13', 82, 'Probe4')
-# exps[2].Load('2023-02-13', 83, 'Probe4')
-# exps[3].Load('2023-02-13', 84, 'Probe4')
+exps[0].Load('2023-02-13', 81, 'Probe4')
+exps[1].Load('2023-02-13', 82, 'Probe4')
+exps[2].Load('2023-02-13', 83, 'Probe4')
+exps[3].Load('2023-02-13', 84, 'Probe4')
+
 
 # pltlib.plot_multi_traj(exps, crop_rev= True, savefig = False) #crop at reverse target
 
@@ -96,21 +98,21 @@ pltlib.plot_multi_traj(exps, align_entrance=True, crop_interval=crop_intervals, 
 LATENCY, DISTANCE, SPEED LEARNING CURVES
 ***************************************
 '''
-ttg = calc.iterate_all_trials(['2023-01-11'], training_trials_only = True, continuous= False)
-ls.plot_latency(ttg, bestfit=False, log=True, savefig = False)
-ls.plot_distance(ttg, bestfit=False, log=True, savefig = False)
+ttg = calc.iterate_all_trials(['2023-02-13'], training_trials_only = False, continuous= False)
+ls.plot_latency(ttg, bestfit=False, log=False, savefig = False)
+ls.plot_distance(ttg, bestfit=False, log=False, savefig = False)
 ls.plot_speed(ttg, bestfit=False, savefig = False)
 p=calc.curve_pValue(ttg)
 
 #get single trial stats
-lat, dist, speed = calc.calc_lat_dist_sped(exp)
-print(f'Latency is {round(lat, 2)} s, Distance is {round(dist, 2)} cm, Speed is {round(speed, 2)} cm/s')
+# lat, dist, speed = calc.calc_lat_dist_sped(exp)
+# print(f'Latency is {round(lat, 2)} s, Distance is {round(dist, 2)} cm, Speed is {round(speed, 2)} cm/s')
 
 #%%
 '''
 A-B Distance, Spread & Random Distance Comparison
 '''
-exp = [plib.TrialData() for i in range(12)]
+exp = [plib.TrialData() for i in range(32)]
 exp[0].Load('2022-08-12', 69, 'Probe')
 exp[1].Load('2022-08-12', 70, 'Probe')
 exp[2].Load('2022-08-12', 71, 'Probe')
@@ -119,14 +121,36 @@ exp[4].Load('2022-08-12', 69, 'Probe2')
 exp[5].Load('2022-08-12', 70, 'Probe2')
 exp[6].Load('2022-08-12', 71, 'Probe2')
 exp[7].Load('2022-08-12', 72, 'Probe2')
-exp[8].Load('2023-02-13', 81, 'Probe3')
-exp[9].Load('2023-02-13', 82, 'Probe3')
-exp[10].Load('2023-02-13', 83, 'Probe3')
-exp[11].Load('2023-02-13', 84, 'Probe3')
+
+exp[8].Load('2022-09-20', 73, 'Probe')
+exp[9].Load('2022-09-20', 74, 'Probe')
+exp[10].Load('2022-09-20', 75, 'Probe')
+exp[11].Load('2022-09-20', 76, 'Probe')
+exp[12].Load('2022-09-20', 73, 'Probe2')
+exp[13].Load('2022-09-20', 74, 'Probe2')
+exp[14].Load('2022-09-20', 75, 'Probe2')
+exp[15].Load('2022-09-20', 76, 'Probe2')
+
+exp[16].Load('2023-02-13', 81, 'Probe')
+exp[17].Load('2023-02-13', 82, 'Probe')
+exp[18].Load('2023-02-13', 83, 'Probe')
+exp[19].Load('2023-02-13', 84, 'Probe')
+exp[20].Load('2023-02-13', 81, 'Probe3')
+exp[21].Load('2023-02-13', 82, 'Probe3')
+exp[22].Load('2023-02-13', 83, 'Probe3')
+exp[23].Load('2023-02-13', 84, 'Probe3')
+exp[24].Load('2023-02-13', 81, 'Probe4')
+exp[25].Load('2023-02-13', 82, 'Probe4')
+exp[26].Load('2023-02-13', 83, 'Probe4')
+exp[27].Load('2023-02-13', 84, 'Probe4')
+exp[28].Load('2023-02-13', 81, 'Probe2')
+exp[29].Load('2023-02-13', 82, 'Probe2')
+exp[30].Load('2023-02-13', 83, 'Probe2')
+exp[31].Load('2023-02-13', 84, 'Probe2')
 
 numbers = calc.calc_spread_iterate_exp(exp)
 
-spread =  np.array(calc.calc_traj_spread(exp[11])) #individual spreads
+# spread =  np.array(calc.calc_traj_spread(exp[11])) #individual spreads
 
 #%%
 '''
