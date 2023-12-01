@@ -20,7 +20,7 @@ import modules.config as cfg
 #%%
 '''Whole experiment import'''
 
-experiment = '2023-05-01'
+experiment = '2023-09-18'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
@@ -35,19 +35,22 @@ for f in os.listdir(os.path.join(cfg.RAW_FILE_DIR, experiment+'_Raw Trial Data')
 #%% Run this cell as a check first
 '''Hole Detection'''
 
-experiment = '2023-05-01'
+experiment = '2023-09-18'
 
 exp = plib.TrialData()
-exp.Load(experiment, '1', '1') #use this trial's image as the standard
+exp.Load(experiment, '*', 'Probe') #use this trial's image as the standard
 arena_circle, gray = phc.detect_arena_circle(os.path.join(cfg.ROOT_DIR, 'data', 'BackgroundImage', exp.bkgd_img), 
                                              mask_sensitivity=60.)
 holes = phc.detect_arena_hole_coords(arena_circle, gray)
 r_holes, arena_coords = phc.transpose_coords(holes, arena_circle, gray.shape, exp.img_extent)
 
+# holes_filt = phc.filter_holes(holes, arena_circle, gray, threshold=(10,10)) #optional filtering
+
 # exp.Load(experiment, '73', 'Probe2')
 # exp.arena_circle = arena_coords
 # exp.r_arena_holes = r_holes
 # exp.Update()
+
 
 #%% run this cell to update all files with circle and hole coordinate data (make sure to check the detection is correct first)
 for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):

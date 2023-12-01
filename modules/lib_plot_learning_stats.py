@@ -170,6 +170,27 @@ def plot_distance(data, bestfit = False, log = True, savefig = False):
             plt.savefig(ROOT_DIR+'/figures/AvgDistance M%s-%s.png'%(data['Distance'].columns[0], data['Distance'].columns[-1]), dpi=600, bbox_inches='tight', pad_inches = 0)
     plt.show()
     
+def plot_distance_individually(data, savefig=False):
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
+    
+    x = data['Distance'].index
+    y = data['Distance']
+    
+    for yi in y:
+        ax.plot(x, y[yi], label=yi)
+        
+    plt.legend()
+    ax.set_xlabel('Trials', fontsize=13)
+    ax.set_ylabel('Distance (cm)', fontsize=13)
+    ax.grid(False) #hide gridlines
+    ax.spines['top'].set_visible(False) 
+    ax.spines['right'].set_visible(False) 
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(2)) #sets x-axis spacing
+    
+    if savefig == True:
+            plt.savefig(ROOT_DIR+'/figures/Individual M%s-%s.png'%(data['Distance'].columns[0], data['Distance'].columns[-1]), dpi=600, bbox_inches='tight', pad_inches = 0)
+    plt.show()
+    
 def plot_speed(data, bestfit = False, log = False, savefig = False):
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3))
     
@@ -215,19 +236,29 @@ def plot_speed(data, bestfit = False, log = False, savefig = False):
             plt.savefig(ROOT_DIR+'/figures/AvgSpeed M%s-%s.png'%(data['Speed'].columns[0], data['Speed'].columns[-1]), dpi=600, bbox_inches='tight', pad_inches = 0)
     plt.show()
     
-def plot_compare_curves(data1, data2, label1, label2, show_sig = True, log = False, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
+def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, log = False, crop_trial = False, savefig = False):
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
     
-    y1 = data1.dropna(axis=0)
-    y2 = data2.dropna(axis=0)
+    if isinstance(crop_trial, bool):
+        y1 = data1.dropna(axis=0)
+        y2 = data2.dropna(axis=0)
+    elif isinstance(crop_trial, int): 
+        crop = crop_trial
+        y1 = data1.dropna(axis=0).iloc[:crop]
+        y2 = data2.dropna(axis=0).iloc[:crop]
+    else:
+        raise ValueError('crop_trial should be False or an integer') 
     
     if len(y1) != len(y2): #if they are not the same length
         #find min axis and crop
         y1 = data1.iloc[:min(len(y1), len(y2))]
         y2 = data2.iloc[:min(len(y1), len(y2))]
+        
     
     x = y1.index
-
+    
+    
+        
     avg1 = np.nanmean(y1, 1)
     avg2 = np.nanmean(y2, 1)
     SE1 = np.nanstd(y1, 1)/np.sqrt(y1.shape[1])
@@ -264,9 +295,9 @@ def plot_compare_curves(data1, data2, label1, label2, show_sig = True, log = Fal
             print(f'Trial {x[idx]} is {pval}')
     
     ax.set_xlabel('Trials', fontsize=13)
-    ax.set_ylabel('Speed (cm/s)', fontsize=13)
+    ax.set_ylabel(ylabel, fontsize=13)
     
-    ax.legend(handles=[line1, line2], fontsize=11, loc='lower right') #legend for average line
+    ax.legend(handles=[line1, line2], fontsize=11, loc='upper right') #legend for average line
     
     # ax.set_ylim(5, 40)
     ax.grid(False) #hide gridlines
@@ -278,7 +309,7 @@ def plot_compare_curves(data1, data2, label1, label2, show_sig = True, log = Fal
         ax.set(yscale="log") #set a logarithmic scale
     
     if savefig == True:
-            plt.savefig(ROOT_DIR+f'/figures/CompareCurves_{label1}_vs_{label2}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
+            plt.savefig(ROOT_DIR+f'/figures/CompareCurves_{label1}_vs_{label2}_{ylabel}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
     plt.show()
 
 def plot_percent_bar(data, savefig= False):
@@ -341,4 +372,8 @@ if __name__ == '__main__':
     # sex_trial = iterate_all_trials(['2022-08-12','2022-09-20'], training_trials_only = True, continuous= False)
     # male, female = sex_trial['Speed'][['69','70','71','72']], sex_trial['Speed'][['73','74','75','76']]
     # plot_compare_curves(male, female, 'Male', 'Female', show_sig = True, log = False)
+    
+    # loc = iterate_all_trials(['2023-07-07'], continuous= False)
+    plot_distance_individually(loc, savefig=True)
+    
     pass

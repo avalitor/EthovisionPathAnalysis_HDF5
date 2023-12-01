@@ -18,8 +18,8 @@ PLOT PERCENT BAR
     
 Rotating Entrances
 '''
-d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], 'Probe', '2min')
-ls.plot_percent_bar(d)
+# d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], 'Probe', '2min')
+# ls.plot_percent_bar(d)
 
 '''
 Static Entrances
@@ -31,8 +31,14 @@ Static Entrances
 # d = calc.calc_search_bias(['2019-12-11','2021-08-11'], 'Probe', '2min')
 # ls.plot_percent_bar(d)
 
-# d = calc.calc_search_bias(['2022-02-13'], 'Probe', '2min', 15.)
+# d = calc.calc_search_bias(['2023-07-07'], 'Probe', '2min', 15.)
 # ls.plot_percent_bar(d)
+
+'''individual trial'''
+exp = plib.TrialData()
+exp.Load('2023-08-15', '91', 'Reverse')
+d = calc.compare_target_dwell(exp, exp.target_reverse, time_limit = '5min', radius = 15.)
+ls.plot_percent_bar(d)
 
 '''
 LATENCY, DISTANCE, SPEED LEARNING CURVES
@@ -49,7 +55,7 @@ Single trial REL data
 
 Whole experiemnt before probe
 '''
-# rotate = calc.iterate_all_trials(['2023-02-13'], continuous= False)
+# rotate = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], continuous= False)
 # ls.plot_latency(rotate, log=True, savefig = False)
 # ls.plot_distance(rotate, log=True, savefig = False)
 # ls.plot_speed(rotate, savefig = False)
@@ -81,6 +87,10 @@ Whole experiemnt before probe
 # sex_trial = calc.iterate_all_trials(['2022-08-12','2022-09-20'], training_trials_only = True, continuous= False)
 # male, female = sex_trial['Speed'][['69','70','71','72']], sex_trial['Speed'][['73','74','75','76']]
 # ls.plot_compare_curves(male, female, 'Male', 'Female', show_sig = True, log = False)
+
+# ATRX_trial = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], training_trials_only = False, continuous= False)
+# KO, WT = ATRX_trial['Distance'][['85','88','91','92','93','94','98']], ATRX_trial['Distance'][['86','87','89','90','95','96','97']]
+# ls.plot_compare_curves(KO, WT, 'KO', 'WT', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=True)
 
 '''
 DISTANCE BETWEEN TARGETS

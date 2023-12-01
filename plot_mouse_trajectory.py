@@ -14,14 +14,14 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 '''plot single traj'''
 exp = plib.TrialData()
-exp.Load('2023-05-01', '1', '1')
+exp.Load('2023-09-18', '15', '10')
 print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
-# objs.Load('2022-09-20', 73, 'Probe')
+# objs.Load('2021-06-22', '36', 'Probe2')
 # print('Mouse %s Trial %s'%(objs.mouse_number, objs.trial))
 
 # pltlib.plot_single_traj(objs, crop_end_custom = objs.target_reverse, continuous = False, savefig = False)
@@ -35,15 +35,15 @@ pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 
 '''plots multiple trajectories and REL'''
-# objs = [plib.TrialData() for i in range(7)]
-# # objs[0].Load('2023-02-13', '81', 'Probe4')
-# objs[0].Load('2023-02-13', '82', 'Probe4')
-# objs[1].Load('2023-02-13', '83', 'Probe4')
-# objs[2].Load('2023-02-13', '84', 'Probe4')
-# objs[3].Load('2023-02-13', '81', 'Probe3')
-# objs[4].Load('2023-02-13', '82', 'Probe3')
-# objs[5].Load('2023-02-13', '83', 'Probe3')
-# objs[6].Load('2023-02-13', '84', 'Probe3')
+# objs = [plib.TrialData() for i in range(8)]
+# objs[0].Load('2021-06-22', '36', '1')
+# objs[1].Load('2021-06-22', '36', '2')
+# objs[2].Load('2021-06-22', '36', '3')
+# objs[3].Load('2021-06-22', '36', '4')
+# objs[4].Load('2021-06-22', '36', '5')
+# objs[5].Load('2021-06-22', '36', '6')
+# objs[6].Load('2021-06-22', '36', '7')
+# objs[7].Load('2021-06-22', '36', '8')
 
 # for i in objs: print('Mouse %s Trial %s'%(i.mouse_number, i.trial))
 
@@ -72,17 +72,18 @@ pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 '''plot multiple trajectories on different graphs'''
 # objs = [plib.TrialData() for i in range(8)]
-# objs[0].Load('2022-10-11', 1, 'Probe 2')
-# objs[1].Load('2022-10-11', 2, 'Probe 2')
-# objs[2].Load('2022-10-11', 3, 'Probe 2')
-# objs[3].Load('2022-10-11', 4, 'Probe 2')
-# objs[4].Load('2022-10-11', 5, 'Probe 2')
-# objs[5].Load('2022-10-11', 6, 'Probe 2')
-# objs[6].Load('2022-10-11', 7, 'Probe 2')
-# objs[7].Load('2022-10-11', 8, 'Probe 2')
+# objs[0].Load('2021-06-22', '36', '19')
+# objs[1].Load('2021-06-22', '36', '20')
+# objs[2].Load('2021-06-22', '36', '21')
+# objs[3].Load('2021-06-22', '36', '22')
+# objs[4].Load('2021-06-22', '36', '23')
+# objs[5].Load('2021-06-22', '36', '24')
+# objs[6].Load('2021-06-22', '36', '25')
+# objs[7].Load('2021-06-22', '36', '26')
+
 
 # for i in objs:
-#     pltlib.plot_single_traj(i, crop_end_custom = i.target_reverse, savefig=False)
+#     pltlib.plot_single_traj(i, crop_end_custom = i.target, savefig=True)
     
 
 '''plots heatmap of two experiments'''
@@ -119,10 +120,21 @@ pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 # pltlib.plot_heatmap(objs, '2min', False)
 
 
-# objs = [plib.TrialData() for i in range(4)]
-# objs[0].Load('2022-02-13', 61, 'Probe')
-# objs[1].Load('2022-02-13', 62, 'Probe')
-# objs[2].Load('2022-02-13', 63, 'Probe')
-# objs[3].Load('2022-02-13', 64, 'Probe')
+# objs = [plib.TrialData() for i in range(14)]
+# objs[0].Load('2023-07-07', 85, 'Reverse')
+# objs[1].Load('2023-07-07', 86, 'Reverse')
+# objs[2].Load('2023-07-07', 87, 'Reverse')
+# objs[3].Load('2023-07-07', 88, 'Reverse')
+# objs[4].Load('2023-07-07', 89, 'Reverse')
+# objs[5].Load('2023-07-07', 90, 'Probe')
 
-# pltlib.plot_heatmap(objs, '5min', False)
+# objs[6].Load('2023-08-15', 91, 'Reverse')
+# objs[7].Load('2023-08-15', 92, 'Reverse')
+# objs[8].Load('2023-08-15', 93, 'Reverse')
+# objs[9].Load('2023-08-15', 94, 'Reverse')
+# objs[10].Load('2023-08-15', 95, 'Reverse')
+# objs[11].Load('2023-08-15', 96, 'Reverse')
+# objs[12].Load('2023-08-15', 97, 'Reverse')
+# objs[13].Load('2023-08-15', 98, 'Reverse')
+
+# pltlib.plot_heatmap(objs[13], '5min', True)

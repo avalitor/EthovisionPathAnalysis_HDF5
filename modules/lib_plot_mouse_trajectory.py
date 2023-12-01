@@ -396,7 +396,7 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     colors = [(1,0,0,c) for c in np.linspace(0,1,100)]
     cmapred = mcolors.LinearSegmentedColormap.from_list('mycmap', colors, N=20)
     hm = ax.imshow(img, extent=extent, origin='lower', cmap=cmapred) #othor colours: rainbow_alpha, cm.jet
-    plt.colorbar(mappable=hm)
+    # plt.colorbar(mappable=hm) #add colorbar
     
     
     

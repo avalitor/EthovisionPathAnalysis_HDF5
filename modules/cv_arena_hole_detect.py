@@ -60,6 +60,30 @@ def detect_arena_hole_coords(main_circle, gray):
     plt.imshow(masked)
     return holes
 
+
+def filter_holes(holes, main_circle, gray, threshold=(10,10)): #in case you wanna double check the holes
+
+    import itertools
+    def process(input_list, threshold): #gets rid of holes within a certian distance threshold
+        combos = itertools.combinations(input_list, 2)
+        points_to_remove = [point2
+                            for point1, point2 in combos
+                            if abs(point1[0]-point2[0])<=threshold[0] and abs(point1[1]-point2[1])<=threshold[1]]
+        points_to_keep = [point for point in input_list if point not in points_to_remove]
+        return points_to_keep
+
+    holes_filt = process(holes, threshold)
+
+    mask = np.zeros(gray.shape[:2], dtype="uint8") #create dark image of same size
+    cv2.circle(mask, (main_circle[0], main_circle[1]), main_circle[2], 255, -1)
+    masked = cv2.bitwise_and(gray, gray, mask=mask) #apply the mask
+    
+    for h in holes_filt:
+        cv2.circle(masked,(h[0],h[1]),4,(0,255,0), 2) #draw circle center, radius, colour, thickness
+        
+    plt.imshow(masked)
+    return holes_filt
+
 def transpose_coords(holes, arena, current_extent = (499., 888.), target_extent = [-151.26, 150.94, -84.66, 85.29]):
     '''transform coordinates of arena and holes to be compatible with ethovison trial coordinates'''
     

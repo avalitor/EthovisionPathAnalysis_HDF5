@@ -180,11 +180,11 @@ def peakdet(v, delta, x = None):
 
     return np.array(maxtab), np.array(mintab)
 
-def find_sharp_curve_near_hole(curvatures, idx_inter):
+def find_sharp_curve_near_hole(curvatures, idx_inter, delta = 1.):
     # threshold = np.nanmin(curvatures) + 0.2 * (np.nanmax(curvatures) - np.nanmin(curvatures))
     # peaks, _ = sig.find_peaks(curvatures, height=25., distance = 3.) #find maxima
     # peaks = sig.find_peaks_cwt(curvatures, widths = np.arange(0.5,5), gap_thresh = 20, noise_perc=5) #find maxima
-    peaks, _ = peakdet(curvatures, 12) #forumula from matlab, usually delta = 1
+    peaks, _ = peakdet(curvatures, delta) #forumula from matlab, usually delta = 1
     
     # f = (velocity[:-1]-threshold)*(velocity[1:]-threshold) # f<=0 -> crossing of velocity threshold;
     # idx_traj_slow = np.nonzero(f <= 0)[0] # index of all threshold crossings
@@ -192,7 +192,7 @@ def find_sharp_curve_near_hole(curvatures, idx_inter):
     
     #try replacing peaks with idx_traj_slow
     k_holes_curve = [] #keys of holes where curving occured
-    idx_traj_holes_curve = [] #index to get timepoints when slowing occured in vicinity of hole
+    idx_traj_holes_curve = [] #index to get timepoints when curving occured in vicinity of hole
     for i,k in enumerate(idx_inter):
         if k is not None:
             if len(np.intersect1d(peaks, k)) > 0:
@@ -212,7 +212,7 @@ def find_sharp_curve_near_hole(curvatures, idx_inter):
 # from operator import itemgetter
 def get_times():
     already_visited_holes = []
-    k_times = []
+    k_times = [] # hole key and trajectory index
     for i, hole in enumerate(idx_inter):
         if hole is not None and idx_traj_holes_curve[i] is not None:
             for x in enumerate(hole):
@@ -230,11 +230,11 @@ def get_times():
     for i in k_times: #idx_traj_holes_curve or idx_traj_slow_holes
         times.append(data.time[i[1]])
     times = sorted(list(set(times))) #remove duplicates & sorts in decending order
-    return times
+    return times, k_times
 
 #%%
-
-def plot_hole_checks():
+import matplotlib.patches as patches
+def plot_hole_checks(data, k_times, crop_at_target=True, crop_time = False, savefig=False):
 
     fig, ax = plt.subplots()
     
@@ -246,23 +246,53 @@ def plot_hole_checks():
                                           data.arena_circle[2] , fill = False )
     ax.add_artist( Drawing_arena_circle )
     
-    for c in r_holes:
+    for c in data.r_arena_holes:
         small_hole = plt.Circle( (c[0], c[1] ), 0.5 , fill = False ,alpha=0.5)
         ax.add_artist( small_hole )
         
-    colors_time_course = plt.get_cmap('jet_r') # plt.get_cmap('cool') #seismic
-    t_seq_hole = data.time[k_times[:,1]]/data.time[-1]
-    t_seq_traj = data.time/data.time[-1]
     
-    idx_target = 1200#pltlib.coords_to_target(data.r_nose, data.target_reverse)
-    # plt.plot(data.r_nose[:,0], data.r_nose[:,1], colors='k') #plot traj
-    plt.plot(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], color='b')
+    
+    if crop_at_target and isinstance(crop_time, bool):
+        idx_end = pltlib.coords_to_target(data.r_nose, data.target)
+    elif crop_time == '2min' : 
+        idx_end = np.searchsorted(data.time, 120.)
+    elif crop_time == '5min' : idx_end = np.searchsorted(data.time, 300.)
+    else:
+        idx_end = len(data.r_nose)
+        
+    k_times = k_times[k_times[:,1] <= idx_end] #crop k_times
+        
+    colors_time_course = plt.get_cmap('cool') # plt.get_cmap('cool') #jet_r
+    t_seq_hole = data.time[k_times[:,1]]/data.time[idx_end-1]
+    t_seq_traj = data.time/data.time[idx_end-1]
+        
+    plt.plot(data.r_nose[:idx_end,0], data.r_nose[:idx_end,1], color='k')
     
     # ax.scatter(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], s=1.5, facecolors=colors_time_course(t_seq_traj[:idx_target])) #plot path with colours
     
     #plots hole checks
-    ax.scatter(r_holes[k_times[:,0]][:,0], r_holes[k_times[:,0]][:,1], s=50, marker = 'o', 
-               facecolors='none', edgecolors=colors_time_course(t_seq_hole), linewidths=2.)
+    
+    ax.scatter(data.r_arena_holes[k_times[:,0]][:,0], data.r_arena_holes[k_times[:,0]][:,1], 
+               s=50, marker = 'o', facecolors='none', edgecolors=colors_time_course(t_seq_hole), 
+               linewidths=2.)
+    
+    #draw target
+    target = plt.Circle((data.target), 2.5 , color='b', alpha=1)
+    ax.add_artist(target)
+
+    #draw entrance
+    for i, _ in enumerate(data.r_nose):
+        if np.isnan(data.r_nose[i][0]): continue
+        else:
+            first_coord = data.r_nose[i]
+            break
+    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
+    ax.add_artist(entrance)
+    
+    # Create a Rectangle patch
+    # rect = patches.Rectangle((data.r_nose[0]), 7, 7, linewidth=5, edgecolor='k', facecolor='none')
+    # ax.add_patch(rect)
+
     
     # #plots all holes
     # for hole in r_holes:
@@ -290,9 +320,26 @@ def plot_hole_checks():
     ax.set_ylim([data.img_extent[2],data.img_extent[3]])
     ax.axis('off')
     
+    if savefig == True:
+        plt.savefig(cfg.ROOT_DIR+'/figures/HoleCheck_%s_M%s_%s.png'%(data.protocol_name, data.mouse_number, data.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
+        
+    
+    
     plt.show()
     
-
+#%%
+def plot_hole_check_heatmap(): #in progress, want to change circle size based on number of checks
+    fig, ax = plt.subplots()
+    
+    #draws arena
+    Drawing_arena_circle = plt.Circle( (data.arena_circle[0], data.arena_circle[1]), 
+                                          data.arena_circle[2] , fill = False )
+    ax.add_artist( Drawing_arena_circle )
+    
+    for c in data.r_arena_holes:
+        small_hole = plt.Circle( (c[0], c[1] ), 0.5 , fill = False ,alpha=0.5)
+        ax.add_artist( small_hole )
+    
 #%%
 
 def plot_curvatures():
@@ -310,7 +357,7 @@ def plot_curvatures():
     plt.plot( x[x_slow], y[x_slow], "o") #plot peaks (slowdowns or curve inflections)
     
     
-    x_slow_and_hole = [i for i in k_times[:,1] if i <= cutoff]
+    x_slow_and_hole = [i for i in idx_traj_holes_curve[:,1] if i <= cutoff]
     colors_time_course = plt.get_cmap('jet_r')
     t_seq    = data.time[x_slow_and_hole]/data.time[-1]
     # idx_target = pltlib.coords_to_target(data.r_center, data.target)
@@ -324,7 +371,7 @@ def plot_curvatures():
 #%%    
 import matplotlib.animation as animation 
 
-def plot_animated_traj():
+def plot_animated_traj(savefig = False):
     fig, ax = plt.subplots()
     ax.set_aspect('equal','box')
     ax.set_xlim([data.img_extent[2],data.img_extent[3]])
@@ -334,7 +381,7 @@ def plot_animated_traj():
     Drawing_arena_circle = plt.Circle( (data.arena_circle[0], data.arena_circle[1]), 
                                           data.arena_circle[2] , fill = False )
     ax.add_artist( Drawing_arena_circle )
-    for c in r_holes:
+    for c in data.r_arena_holes:
         small_hole = plt.Circle( (c[0], c[1] ), 0.7 , fill = False ,alpha=0.5)
         ax.add_artist( small_hole )
         
@@ -377,8 +424,8 @@ def plot_animated_traj():
         if np.intersect1d(k_times[:,1], i).size != 0.:
             for h in k_times:
                 if h[1]==i:
-                    x_h = r_holes[h[0]][0]
-                    y_h = r_holes[h[0]][1]
+                    x_h = data.r_arena_holes[h[0]][0]
+                    y_h = data.r_arena_holes[h[0]][1]
                     xdata_hole.append(x_h)
                     ydata_hole.append(y_h)
                     scat.set_offsets(np.c_[xdata_hole, ydata_hole])
@@ -401,8 +448,8 @@ def plot_animated_traj():
     # call the animator	 
     anim = animation.FuncAnimation(fig, animate, init_func=init, 
     							frames=2100, interval=30, blit=True, repeat=False) 
-    
-    # anim.save('animation.mp4')
+    if savefig:
+        anim.save(f'{cfg.ROOT_DIR}/figures/animation_{data.exp}_{data.mouse_number}_{data.trial}.mp4')   
     plt.show()
 #%%
 
@@ -410,17 +457,17 @@ if __name__ == '__main__':
     data = plib.TrialData()
     # data.Load('SingleTrial', 'Nas1', '1')
     # data.Load('2021-11-19', 59, 16)
-    # data.Load('2021-06-22', '36', 'Probe2')
-    r_holes = get_hole_coords(data, update_data=True, recalc=False)
+    data.Load('2023-07-07', '87', '9')
+    # data.Load('2023-08-15', '91', 'Reverse')
 
     # idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, r_holes, 18000, hole_radius = 4.)
     # idx_traj_slow, k_holes_slow, idx_traj_slow_holes = find_slowing_down_near_hole(data.velocity, idx_inter)
 
 
-    idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, r_holes, 12000, hole_radius = 4.)
-    curvature_list = get_traj_curvatures(data, 12000)
-    peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter)
-    
-    plot_hole_checks()
-    
+    # idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, data.r_arena_holes, 12000, hole_radius = 4.)
+    # curvature_list = get_traj_curvatures(data, 12000)
+    # peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter, delta = 1.)
+    # time, k_times = get_times()
+    # plot_hole_checks(data, k_times, crop_at_target=True, crop_time=False, savefig=True)
+    # plot_animated_traj(savefig=True)
     

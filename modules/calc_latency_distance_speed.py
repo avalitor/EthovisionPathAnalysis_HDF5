@@ -205,14 +205,15 @@ def calc_time_in_area(target, array, idx_end, times, radius=15.):
     return time_in_range
 
 #compares target dwell with REL targets, this only works with probe trials, so the center can be found
-def compare_target_dwell(data, time_limit = '2min', radius = 15.):
+def compare_target_dwell(data, target, time_limit = '2min', radius = 15.):
     idx_end = pltlib.get_coords_timeLimit(data, time_limit)
-    arena_center = pltlib.get_arena_center(data.r_nose)
+    try: arena_center = data.arena_circle[:2]
+    except: arena_center = pltlib.get_arena_center(data.r_nose)
     
-    t1 = calc_time_in_area(data.target, data.r_nose, idx_end, data.time, radius)
-    t2 = calc_time_in_area(pltlib.rotate(data.target, arena_center, 270), data.r_nose, idx_end, data.time, radius)
-    t3 = calc_time_in_area(pltlib.rotate(data.target, arena_center, 180), data.r_nose, idx_end, data.time, radius)
-    t4 = calc_time_in_area(pltlib.rotate(data.target, arena_center, 90), data.r_nose, idx_end, data.time, radius)
+    t1 = calc_time_in_area(target, data.r_nose, idx_end, data.time, radius)
+    t2 = calc_time_in_area(pltlib.rotate(target, arena_center, 270), data.r_nose, idx_end, data.time, radius)
+    t3 = calc_time_in_area(pltlib.rotate(target, arena_center, 180), data.r_nose, idx_end, data.time, radius)
+    t4 = calc_time_in_area(pltlib.rotate(target, arena_center, 90), data.r_nose, idx_end, data.time, radius)
     return np.array([t1, t2, t3, t4])
 
 #sums the dwell time of all probe trials in an experiment

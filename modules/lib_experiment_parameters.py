@@ -79,7 +79,10 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
             if entrance == u'NW':
                 background = 'BKGDimage-barrier4.png'
         else: background = 'BKGDimage-20230111.png'
-    if experiment == '2023-05-01': background = 'BKGDimage_20230501.png'
+    if experiment == '2023-05-01': background = 'BKGDimage-20230501.png'
+    if experiment == '2023-07-07': background = 'BKGDimage-20230707.png'
+    if experiment == '2023-08-15': background = 'BKGDimage-20230815.png'
+    if experiment == '2023-09-18': background = 'BKGDimage-20230918.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -299,6 +302,33 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = -13.35, 38.48
         if entrance == 'NE':
             target_coords = -37.54, -12.57
+    elif experiment == '2023-07-07':
+        if entrance == u'SW':
+            target_coords = -38.44, -13.48
+        if entrance == u'SE':
+            target_coords = 13.05, -37.59
+        if entrance == u'NE':
+            target_coords = 38.01, 13.62
+        if entrance == u'NW':
+            target_coords = -13.48, 38.87
+    elif experiment == '2023-08-15':
+        if entrance == u'SW':
+            target_coords = -39.00, -12.38
+        if entrance == u'SE':
+            target_coords = 11.67, -38.15
+        if entrance == u'NE':
+            target_coords = 38.43, 12.38
+        if entrance == u'NW':
+            target_coords = -12.53, 39.00
+    elif experiment == '2023-09-18':
+        if entrance == u'SW':
+            target_coords = 38.90, 12.76
+        if entrance == u'SE':
+            target_coords = -11.97, 38.58
+        if entrance == u'NE':
+            target_coords = -37.48, -12.13
+        if entrance == u'NW':
+            target_coords = 12.60, -38.11
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
@@ -442,5 +472,23 @@ def set_reverse_target(experiment, entrance, trial_condition):
             if entrance == u'NE':
                 reverse_target_coords = 38.01, 12.34
             if entrance == u'NW':
-                reverse_target_coords = -12.48, 39.43  
+                reverse_target_coords = -12.48, 39.43
+    elif experiment == '2023-07-07':
+        if entrance == u'SW':
+            reverse_target_coords = 38.01, 13.62
+        if entrance == u'SE':
+            reverse_target_coords = -13.48, 38.87
+        if entrance == u'NE':
+            reverse_target_coords = -38.44, -13.48
+        if entrance == u'NW':
+            reverse_target_coords = 13.05, -37.59
+    elif experiment == '2023-08-15':
+        if entrance == u'SW':
+            reverse_target_coords = 38.43, 12.38
+        if entrance == u'SE':
+            reverse_target_coords = -12.53, 39.00
+        if entrance == u'NE':
+            reverse_target_coords = -39.00, -12.38
+        if entrance == u'NW':
+            reverse_target_coords = 11.67, -38.15
     return reverse_target_coords
