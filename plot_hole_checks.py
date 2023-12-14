@@ -210,7 +210,7 @@ def find_sharp_curve_near_hole(curvatures, idx_inter, delta = 1.):
 
 # from itertools import groupby
 # from operator import itemgetter
-def get_times():
+def get_times(data, idx_inter, idx_traj_holes_curve):
     already_visited_holes = []
     k_times = [] # hole key and trajectory index
     for i, hole in enumerate(idx_inter):
@@ -451,23 +451,31 @@ def plot_animated_traj(savefig = False):
     if savefig:
         anim.save(f'{cfg.ROOT_DIR}/figures/animation_{data.exp}_{data.mouse_number}_{data.trial}.mp4')   
     plt.show()
+    
+def main_wrap_get_time(data):
+    idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, data.r_arena_holes, idx_end=False, hole_radius = 2.)
+    curvature_list = get_traj_curvatures(data, len(data.time))
+    peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter, delta = 1.)
+    time, k_times = get_times(data, idx_inter, idx_traj_holes_curve)
+   
+    return time
+    
 #%%
 
 if __name__ == '__main__':
     data = plib.TrialData()
-    # data.Load('SingleTrial', 'Nas1', '1')
-    # data.Load('2021-11-19', 59, 16)
-    data.Load('2023-07-07', '87', '9')
-    # data.Load('2023-08-15', '91', 'Reverse')
+    data.Load('2023-10-16', '101', '7')
 
+    #velocity based detection
     # idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, r_holes, 18000, hole_radius = 4.)
     # idx_traj_slow, k_holes_slow, idx_traj_slow_holes = find_slowing_down_near_hole(data.velocity, idx_inter)
 
-
-    # idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, data.r_arena_holes, 12000, hole_radius = 4.)
-    # curvature_list = get_traj_curvatures(data, 12000)
-    # peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter, delta = 1.)
-    # time, k_times = get_times()
-    # plot_hole_checks(data, k_times, crop_at_target=True, crop_time=False, savefig=True)
-    # plot_animated_traj(savefig=True)
+    #curvature based detection
+    idx_inter, r_inter, k_hole = find_trajectory_hole_intersections(data, data.r_arena_holes, idx_end=False, hole_radius = 2.)
+    curvature_list = get_traj_curvatures(data, len(data.time))
+    peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter, delta = 1.)
+    time, k_times = get_times(data, idx_inter, idx_traj_holes_curve)
+    
+    plot_hole_checks(data, k_times, crop_at_target=True, crop_time=False, savefig=False)
+    # plot_animated_traj(savefig=False)
     

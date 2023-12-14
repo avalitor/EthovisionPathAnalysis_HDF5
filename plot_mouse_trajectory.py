@@ -14,7 +14,7 @@ from modules import lib_plot_mouse_trajectory as pltlib
 
 '''plot single traj'''
 exp = plib.TrialData()
-exp.Load('2023-09-18', '15', '10')
+exp.Load('2023-10-16', '101', '6')
 print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)

@@ -14,13 +14,15 @@ Parameter files that need to be updated per experiment:
 """
 import os
 import modules.lib_process_data_to_mat as plib
+import modules.lib_plot_mouse_trajectory as pltlib
 import modules.cv_arena_hole_detect as phc
+from plot_hole_checks import main_wrap_get_time
 import modules.config as cfg
 
 #%%
 '''Whole experiment import'''
 
-experiment = '2023-09-18'
+experiment = '2023-10-16'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
@@ -35,7 +37,7 @@ for f in os.listdir(os.path.join(cfg.RAW_FILE_DIR, experiment+'_Raw Trial Data')
 #%% Run this cell as a check first
 '''Hole Detection'''
 
-experiment = '2023-09-18'
+experiment = '2023-10-16'
 
 exp = plib.TrialData()
 exp.Load(experiment, '*', 'Probe') #use this trial's image as the standard
@@ -62,6 +64,21 @@ for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
     d.r_arena_holes = r_holes
     d.Update()
 
+#%% update files with hole check times and reward get time
+experiment = '2023-10-16'
+# d = plib.TrialData()
+# d.Load(experiment, '101', 7)
+# holes = main_wrap_get_time(d)
+
+for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
+    # print(files)
+    d = plib.TrialData()
+    d.Load(experiment, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
+   
+    d.t_hole_checks = main_wrap_get_time(d)
+    d.t_reward = d.time[pltlib.coords_to_target(d.r_nose, d.target)]
+    print (d.t_reward)
+    d.Update()
 #%%
 '''Single Trial Import'''
 

@@ -29,9 +29,8 @@ def calc_dist_bw_points(coord1, coord2):
 
 #finds index of first coordinate within a certain distance of target
 def coords_to_target(coords, target):
-
     for i in coords:
-        if calc_dist_bw_points(i, target) <= 5.:
+        if calc_dist_bw_points(i, target) <= 1.:
             idx_end = np.where(coords==i)[0][0]
             break
         else: idx_end = len(coords)-2 #minus 2 so it is in bounds of the array
