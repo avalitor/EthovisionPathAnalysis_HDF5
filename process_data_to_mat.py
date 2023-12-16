@@ -77,7 +77,7 @@ for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
    
     d.k_hole_checks = main_wrap_get_time(d)[1]
     d.k_reward = pltlib.coords_to_target(d.r_nose, d.target)
-    print (d.t_reward)
+    print (d.k_reward)
     d.Update()
 #%%
 '''Single Trial Import'''
