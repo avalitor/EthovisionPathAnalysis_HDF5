@@ -183,10 +183,10 @@ class TrialData(): #container to store all trial data and metadata
             self.r_arena_holes = m['r_arena_holes']
         if 'arena_circle' in m:
             self.arena_circle = m['arena_circle'][0]
-        if 't_reward' in m:
-            self.t_reward = m['t_reward'][0][0]
-        if 't_hole_checks' in m:
-            self.t_hole_checks = m['t_hole_checks'][0]
+        if 'k_reward' in m:
+            self.k_reward = m['k_reward'][0][0]
+        if 'k_hole_checks' in m:
+            self.k_hole_checks = m['k_hole_checks'][0]
         
     def Update(self):
         save_path = os.path.join(PROCESSED_FILE_DIR, self.exp, self.filename)
