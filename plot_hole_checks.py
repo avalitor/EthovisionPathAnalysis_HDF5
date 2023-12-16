@@ -458,7 +458,7 @@ def main_wrap_get_time(data):
     peaks, k_holes_curve, idx_traj_holes_curve = find_sharp_curve_near_hole(curvature_list, idx_inter, delta = 1.)
     time, k_times = get_times(data, idx_inter, idx_traj_holes_curve)
    
-    return time
+    return time, k_times
     
 #%%
 

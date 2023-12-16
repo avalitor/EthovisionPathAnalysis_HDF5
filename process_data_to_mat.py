@@ -75,8 +75,8 @@ for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
     d = plib.TrialData()
     d.Load(experiment, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
    
-    d.t_hole_checks = main_wrap_get_time(d)
-    d.t_reward = d.time[pltlib.coords_to_target(d.r_nose, d.target)]
+    d.k_hole_checks = main_wrap_get_time(d)[1]
+    d.k_reward = pltlib.coords_to_target(d.r_nose, d.target)
     print (d.t_reward)
     d.Update()
 #%%
