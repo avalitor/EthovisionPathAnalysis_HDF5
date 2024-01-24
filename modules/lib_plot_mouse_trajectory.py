@@ -30,7 +30,7 @@ def calc_dist_bw_points(coord1, coord2):
 #finds index of first coordinate within a certain distance of target
 def coords_to_target(coords, target):
     for i in coords:
-        if calc_dist_bw_points(i, target) <= 1.:
+        if calc_dist_bw_points(i, target) <= 3.: #try 1.0 or 3.0
             idx_end = np.where(coords==i)[0][0]
             break
         else: idx_end = len(coords)-2 #minus 2 so it is in bounds of the array
@@ -328,7 +328,6 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
 
 def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     
-    
     if type(trialclass_list) is list: #checks if plotting multiple trials or just one
         first_trial = trialclass_list[0]
 
@@ -337,6 +336,7 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
             temp.Load(first_trial.exp, '*', 'Probe')
             origin = get_arena_center(temp.r_nose) #get center of rotation
             for t in trialclass_list: #rotate all coordinates so they align
+                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
                 if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
                 elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
                 elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
@@ -347,6 +347,7 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
                 temp = plib.TrialData()
                 temp.Load(trialclass_list[-1].exp, '*', 'Probe')
                 origin = get_arena_center(temp.r_nose) #get center of rotation
+                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
     
                 for t in trialclass_list:
                     if len(t.time)>0: #checks to see if list data is not empty
@@ -381,11 +382,18 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', first_trial.bkgd_img))
     im = ax.imshow(img, extent=first_trial.img_extent) #plot image to match ethovision coordinates
     
-    #crops the image to 130% of coordinate limits
-    patch = patches.Circle(get_arena_center(first_trial.r_nose), 
-                           radius=((np.nanmax(x)-np.nanmin(x))/2)*1.30, 
-                           transform=ax.transData)
-    im.set_clip_path(patch)
+    if hasattr(first_trial, 'arena_circle'):
+        #crops the image to 130% of coordinate limits
+        patch = patches.Circle(first_trial.arena_circle[:2], 
+                               radius=(first_trial.arena_circle[2]*1.3), 
+                               transform=ax.transData)
+        im.set_clip_path(patch)
+    else: print('Missing arena circle coordinates')
+    # #crops the image to 130% of coordinate limits
+    # patch = patches.Circle(get_arena_center(first_trial.r_nose), 
+    #                        radius=((np.nanmax(x)-np.nanmin(x))/2)*1.30, 
+    #                        transform=ax.transData)
+    # im.set_clip_path(patch)
     
     #plot path
     # ax.plot(x, y, ls='-', color = 'red')
@@ -397,7 +405,9 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     hm = ax.imshow(img, extent=extent, origin='lower', cmap=cmapred) #othor colours: rainbow_alpha, cm.jet
     # plt.colorbar(mappable=hm) #add colorbar
     
-    
+    #plot target
+    target = plt.Circle((first_trial.target), radius = 15., fill = False, ec = 'g', linestyle = '--')
+    ax.add_artist(target)
     
     #scales the heatmap to match the background picture
     plt.xlim(first_trial.img_extent[0], first_trial.img_extent[1]) 
@@ -496,13 +506,81 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
         plt.savefig(ROOT_DIR+'/figures/Plot_%s_M%s_%s.png'%(trialclass.protocol_name, trialclass.mouse_number, trialclass.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
         
     plt.show()
+    
+#%%
+def draw_arena(data, ax):
+    #draws arena
+    Drawing_arena_circle = plt.Circle( (data.arena_circle[0], data.arena_circle[1]), 
+                                          data.arena_circle[2] , fill = False )
+    ax.add_artist( Drawing_arena_circle )
+    
+    for c in data.r_arena_holes:
+        small_hole = plt.Circle( (c[0], c[1] ), 0.5 , fill = False ,alpha=0.5)
+        ax.add_artist( small_hole )
+        
+        ax.set_aspect('equal','box')
+        ax.set_xlim([data.img_extent[2],data.img_extent[3]])
+        ax.set_ylim([data.img_extent[2],data.img_extent[3]])
+        ax.axis('off')
+    return ax
+
+def draw_hole_checks(data, idx_end, ax):
+    k_times = data.k_hole_checks[data.k_hole_checks[:,1]<= idx_end] #crop at target
+    
+    colors_time_course = plt.get_cmap('cool') # plt.get_cmap('cool') #jet_r
+    t_seq_hole = data.time[k_times[:,1]]/data.time[data.k_reward-1]
+    # t_seq_traj = data.time/data.time[data.k_reward-1]
+        
+    #plots hole checks
+    ax.scatter(data.r_arena_holes[k_times[:,0]][:,0], data.r_arena_holes[k_times[:,0]][:,1], 
+               s=50, marker = 'o', facecolors='none', edgecolors=colors_time_course(t_seq_hole), 
+               linewidths=2.)
+    return ax
+
+def draw_entrance(data, ax):
+    #draw entrance
+    for i, _ in enumerate(data.r_nose):
+        if np.isnan(data.r_nose[i][0]): continue
+        else:
+            first_coord = data.r_nose[i]
+            break
+    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
+    ax.add_artist(entrance)
+    return ax
+
+def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=False):
+    fig, ax = plt.subplots()
+    
+    draw_arena(data, ax)
+    
+    if crop_at_target: idx_end = data.k_reward
+    else: idx_end = get_coords_timeLimit(data, time_limit)
+    
+    draw_hole_checks(data, idx_end, ax)
+    
+    plt.plot(data.r_nose[:idx_end,0], data.r_nose[:idx_end,1], color='k', alpha=0.5) #plot path
+    # ax.scatter(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], s=1.5, facecolors=colors_time_course(t_seq_traj[:idx_target])) #plot path with colours
+    
+    # draw_heatmap(spike_coords, data.r_center, idx_end, ax, weighted=True)
+    # draw_traj_heatmap(data.r_center, idx_end, ax)
+    
+    # draw target
+    target = plt.Circle((data.target), 2.5 , color='b', alpha=1)
+    ax.add_artist(target)
+    
+    draw_entrance(data, ax)
+    
+    if savefig == True:
+        plt.savefig(ROOT_DIR+f'/figures/HoleChecks_{data.exp}_M{data.mouse_number}_T{data.trial}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
+    
+    plt.show()
+
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
     exp = plib.TrialData()
-    exp.Load('2022-10-11', '1', 'Probe 2')
+    exp.Load('2023-08-15', '95', 'Probe')
     print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
-    plot_heatmap(exp, '2min')
-
+    plot_hole_checks(exp, crop_at_target=False, time_limit = '5min')
 
     # plot_2_target_analysis(exp, cropcoords = True)
     

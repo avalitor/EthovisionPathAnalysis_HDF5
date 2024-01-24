@@ -8,16 +8,19 @@ requires lib_plot_mouse_trajectory
 @author: Kelly
 """
 
-from modules import lib_process_data_to_mat as plib
-from modules import lib_plot_mouse_trajectory as pltlib
+import modules.lib_process_data_to_mat as plib
+import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
 exp = plib.TrialData()
-exp.Load('2023-10-16', '101', '6')
+exp.Load('2023-07-07', '90', '15')
 print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
 pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
+
+'''plot single traj hole check'''
+# pltlib.plot_hole_checks(exp)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()

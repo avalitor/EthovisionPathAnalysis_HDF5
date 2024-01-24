@@ -93,6 +93,8 @@ def get_coords_bw_points(coords, pointA, pointB):
         coord_interval = coords[idx_end:idx_start]
     return coord_interval
 
+def hole_check_density(data): pass
+    
 #%%
 '''
 Iterate over whole experiment & significance test
@@ -204,7 +206,7 @@ def calc_time_in_area(target, array, idx_end, times, radius=15.):
     # time_in_range = len(idx_in_range)*0.0333333 #estimates time by multiplying samples with sampling rate (30fps)
     return time_in_range
 
-#compares target dwell with REL targets, this only works with probe trials, so the center can be found
+#compares target dwell with given target, this only works with probe trials, so the center can be found
 def compare_target_dwell(data, target, time_limit = '2min', radius = 15.):
     idx_end = pltlib.get_coords_timeLimit(data, time_limit)
     try: arena_center = data.arena_circle[:2]
@@ -225,13 +227,12 @@ def calc_search_bias(experiment, trial = 'Probe', time_limit = '2min', radius=15
             if files.split('_')[-1].split('.')[0] == trial: #checks if it is the specified trial (default is probe trial)
                 d = plib.TrialData()
                 d.Load(exp, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
-                total_dwell = total_dwell + compare_target_dwell(d, time_limit, radius)
+                total_dwell = total_dwell + compare_target_dwell(d, d.target, time_limit, radius)
                 print('read mouse ' +files.split('_')[-2].split('.')[0][1:])
-            
     return total_dwell
 
 '''
-Calculat spread along symmetry line betwen two points
+Calculate spread along symmetry line betwen two points
 '''
 
 # def axis_of_symm(A, B): #gets axis of symmetry between two points

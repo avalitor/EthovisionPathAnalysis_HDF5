@@ -52,14 +52,13 @@ Single trial REL data
 # latency, distance, speed = calc.calc_lat_dist_sped(exp, custom_target=exp.target_reverse)
 
 '''
-
 Whole experiemnt before probe
 '''
-rotate = calc.iterate_all_trials(['2023-10-16'], continuous= False, training_trials_only=False)
-ls.plot_latency(rotate, log=False, savefig = False)
-ls.plot_distance(rotate, log=False, savefig = False)
-ls.plot_speed(rotate, savefig = False)
-calc.curve_pValue(rotate)
+# rotate = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], continuous= False, training_trials_only=False)
+# ls.plot_latency(rotate, log=False, savefig = False)
+# ls.plot_distance(rotate, log=False, savefig = False)
+# ls.plot_speed(rotate, savefig = False)
+# calc.curve_pValue(rotate)
 
 '''
 3 Local Cues
