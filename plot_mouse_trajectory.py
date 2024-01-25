@@ -13,11 +13,11 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-exp = plib.TrialData()
-exp.Load('2023-07-07', '90', '15')
-print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+# exp = plib.TrialData()
+# exp.Load('2023-07-07', '90', '15')
+# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
+# pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 '''plot single traj hole check'''
 # pltlib.plot_hole_checks(exp)
@@ -100,15 +100,11 @@ pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 # objs[6].Load('2021-11-15', 55, 'Probe')
 # objs[7].Load('2021-11-15', 56, 'Probe')
 
-# objs = [plib.TrialData() for i in range(8)] #static
-# objs[0].Load('2019-09-06', 9, 'Probe')
-# objs[1].Load('2019-09-06', 10, 'Probe')
-# objs[2].Load('2019-09-06', 11, 'Probe')
-# objs[3].Load('2019-09-06', 12, 'Probe')
-# objs[4].Load('2019-10-07', 13, 'Probe')
-# objs[5].Load('2019-10-07', 14, 'Probe')
-# objs[6].Load('2019-10-07', 15, 'Probe')
-# objs[7].Load('2019-10-07', 16, 'Probe')
+objs = [plib.TrialData() for i in range(3)] #static
+objs[0].Load('2023-10-16', 101, 'Probe')
+objs[1].Load('2023-12-18', 102, 'Probe')
+objs[2].Load('2023-12-18', 103, 'Probe')
+
 
 # objs = [plib.TrialData() for i in range(4)] #3 local cue, not rotating correctly
 # objs[0].Load('2019-12-11', 17, 'Probe')
@@ -120,7 +116,7 @@ pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 # objs[2].Load('2021-08-11', 47, 'Probe')
 # objs[3].Load('2021-08-11', 48, 'Probe')
 
-# pltlib.plot_heatmap(objs, '2min', False)
+pltlib.plot_heatmap(objs[0], '2min', False)
 
 
 # objs = [plib.TrialData() for i in range(14)]

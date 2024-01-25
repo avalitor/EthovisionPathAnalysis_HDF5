@@ -54,11 +54,11 @@ Single trial REL data
 '''
 Whole experiemnt before probe
 '''
-# rotate = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], continuous= False, training_trials_only=False)
-# ls.plot_latency(rotate, log=False, savefig = False)
-# ls.plot_distance(rotate, log=False, savefig = False)
-# ls.plot_speed(rotate, savefig = False)
-# calc.curve_pValue(rotate)
+rotate = calc.iterate_all_trials(['2023-10-16','2023-12-18'], continuous= False, training_trials_only=True)
+ls.plot_latency(rotate, log=False, savefig = False)
+ls.plot_distance(rotate, log=False, savefig = False)
+ls.plot_speed(rotate, savefig = False)
+calc.curve_pValue(rotate)
 
 '''
 3 Local Cues

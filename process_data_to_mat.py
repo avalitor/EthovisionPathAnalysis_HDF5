@@ -22,7 +22,7 @@ import modules.config as cfg
 #%%
 '''Whole experiment import'''
 
-experiment = '2023-08-15'
+experiment = '2023-12-18'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
@@ -65,7 +65,7 @@ for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
     d.Update()
 
 #%% update files with hole check times and reward get time
-experiment = '2023-08-15'
+# experiment = '2023-08-15'
 # d = plib.TrialData()
 # d.Load(experiment, '101', 7)
 # holes = main_wrap_get_time(d)
