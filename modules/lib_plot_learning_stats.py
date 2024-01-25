@@ -16,7 +16,7 @@ import numpy as np
 from scipy.optimize import curve_fit #for curve fitting
 import scipy.signal #for smooth curve
 import scipy.stats as stats
-from modules.calc_latency_distance_speed import iterate_all_trials, calc_search_bias
+import modules.calc_latency_distance_speed as calc
 from modules.config import ROOT_DIR
 
 '''
@@ -237,7 +237,7 @@ def plot_speed(data, bestfit = False, log = False, savefig = False):
     plt.show()
     
 def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, log = False, crop_trial = False, savefig = False):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 4))
     
     if isinstance(crop_trial, bool):
         y1 = data1.dropna(axis=0)
@@ -254,16 +254,12 @@ def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, l
         y1 = data1.iloc[:min(len(y1), len(y2))]
         y2 = data2.iloc[:min(len(y1), len(y2))]
         
-    
     x = y1.index
     
-    
-        
     avg1 = np.nanmean(y1, 1)
     avg2 = np.nanmean(y2, 1)
     SE1 = np.nanstd(y1, 1)/np.sqrt(y1.shape[1])
     SE2 = np.nanstd(y2, 1)/np.sqrt(y2.shape[1])
-    
     
     line1 = ax.errorbar(x, avg1, yerr=SE1, color='#004E89', label=label1)
     line2 = ax.errorbar(x, avg2, yerr=SE2, color='#C00021', label=label2)
@@ -309,7 +305,8 @@ def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, l
         ax.set(yscale="log") #set a logarithmic scale
     
     if savefig == True:
-            plt.savefig(ROOT_DIR+f'/figures/CompareCurves_{label1}_vs_{label2}_{ylabel}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
+            label = ylabel.split(' ')[0]
+            plt.savefig(ROOT_DIR+f'/figures/CompareCurves_{label1}_vs_{label2}_{label}.png', dpi=600, bbox_inches='tight', pad_inches = 0)
     plt.show()
 
 def plot_percent_bar(data, savefig= False):
@@ -333,10 +330,10 @@ def plot_percent_bar(data, savefig= False):
     ax.spines['right'].set_visible(False)
     
     # ax.axis('off')
-     
+
     ax.set_yticks([])
     ax.set_xticks([0, 25, 50, 75, 100])
-    
+
     ax.set_axisbelow(True) 
     
     # ax.set_yticklabels(['Q1'])
@@ -348,7 +345,7 @@ def plot_percent_bar(data, savefig= False):
     ax.text((Q1+Q2+Q3+Q4)-Q4/2, 3, 'Q4', fontsize=12, ha = 'center')
     
     # fig.suptitle('Percent Bar', fontsize=16)
-    
+
     # leg1 = mpatches.Patch(color='#ffffff', label='Q1')
     # leg2 = mpatches.Patch(color='#ffffff', label='D2')
     # leg3 = mpatches.Patch(color='#C00021', label='Q3')
@@ -361,19 +358,5 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    # static = iterate_all_trials(['2019-05-23','2022-11-04'], continuous= False)
-    # with_cue, no_cue = static['Distance'][['5','6', '7', '8']], static['Distance'][['1','2', '3', '4']]
-    # plot_compare_curves(with_cue, no_cue, 'With Cues', 'No Cues', log = False)
-    
-    # dark_trial = iterate_all_trials(['2019-06-18','2022-11-04'], training_trials_only = False, continuous= False)
-    # dark, light = dark_trial['Distance'][['5','6','7','8']], dark_trial['Distance'][['1','2','3','4']]
-    # plot_compare_curves(dark, light, 'Trained in Light, Trial in Dark', 'Trained in Light', show_sig = False, log = False)
-    
-    # sex_trial = iterate_all_trials(['2022-08-12','2022-09-20'], training_trials_only = True, continuous= False)
-    # male, female = sex_trial['Speed'][['69','70','71','72']], sex_trial['Speed'][['73','74','75','76']]
-    # plot_compare_curves(male, female, 'Male', 'Female', show_sig = True, log = False)
-    
-    # loc = iterate_all_trials(['2023-07-07'], continuous= False)
-    plot_distance_individually(loc, savefig=True)
-    
-    pass
+    d = calc.calc_search_bias(['2023-07-07'], 'Probe', '2min', 15.)
+    plot_percent_bar(d)

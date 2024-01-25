@@ -84,6 +84,7 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
     if experiment == '2023-08-15': background = 'BKGDimage-20230815.png'
     if experiment == '2023-09-18': background = 'BKGDimage-20230918.png'
     if experiment == '2023-10-16': background = 'BKGDimage-20231016.png'
+    if experiment == '2023-12-18': background = 'BKGDimage-20231218.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -92,6 +93,11 @@ def get_mouse_sex(experiment, mouse):
             mouse_sex = 'male'
         if mouse == '1' or mouse == '6' or mouse == '8':
             mouse_sex = 'female'
+    if experiment == '2023-12-18':
+        if mouse == '102': 
+            mouse_sex = 'female'
+        if mouse == '103':
+            mouse_sex = 'male'
     return mouse_sex
 
 #manually sets food target coordinates based on experiment
@@ -332,6 +338,11 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = 12.60, -38.11
     elif experiment == '2023-10-16':
         target_coords = 38.10, 12.65
+    elif experiment == '2023-12-18':
+        if entrance == u'NE':
+            target_coords = 38.10, 12.65
+        if entrance == u'NW':
+            target_coords = -12.65, 39.38
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
