@@ -88,7 +88,6 @@ import modules.lib_plot_mouse_trajectory as pltlib
 # for i in objs:
 #     pltlib.plot_single_traj(i, crop_end_custom = i.target, savefig=True)
     
-
 '''plots heatmap of two experiments'''
 # objs = [plib.TrialData() for i in range(8)] #random entrance
 # objs[0].Load('2021-07-16', 37, 'Probe')
@@ -100,11 +99,10 @@ import modules.lib_plot_mouse_trajectory as pltlib
 # objs[6].Load('2021-11-15', 55, 'Probe')
 # objs[7].Load('2021-11-15', 56, 'Probe')
 
-objs = [plib.TrialData() for i in range(3)] #static
-objs[0].Load('2023-10-16', 101, 'Probe')
-objs[1].Load('2023-12-18', 102, 'Probe')
-objs[2].Load('2023-12-18', 103, 'Probe')
 
+
+(objs := plib.TrialData()).Load('2023-12-18', 102, 'Probe')
+pltlib.plot_heatmap(objs, '5min', False)
 
 # objs = [plib.TrialData() for i in range(4)] #3 local cue, not rotating correctly
 # objs[0].Load('2019-12-11', 17, 'Probe')
@@ -116,7 +114,7 @@ objs[2].Load('2023-12-18', 103, 'Probe')
 # objs[2].Load('2021-08-11', 47, 'Probe')
 # objs[3].Load('2021-08-11', 48, 'Probe')
 
-pltlib.plot_heatmap(objs[0], '2min', False)
+
 
 
 # objs = [plib.TrialData() for i in range(14)]
