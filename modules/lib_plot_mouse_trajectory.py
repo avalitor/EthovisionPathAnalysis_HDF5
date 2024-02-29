@@ -93,8 +93,26 @@ def make_heatmap(x, y, s, bins=1000):
     return heatmap.T, extent
 
 #%%
+'''helper plotting functions'''
+def draw_arena(data, ax):
+    #draws arena
+    Drawing_arena_circle = plt.Circle( (data.arena_circle[0], data.arena_circle[1]), 
+                                          data.arena_circle[2] , fill = False )
+    ax.add_artist( Drawing_arena_circle )
+    
+    for c in data.r_arena_holes:
+        small_hole = plt.Circle( (c[0], c[1] ), 0.5 , fill = False ,alpha=0.5)
+        ax.add_artist( small_hole )
+        
+        ax.set_aspect('equal','box')
+        ax.set_xlim([data.img_extent[2],data.img_extent[3]])
+        ax.set_ylim([data.img_extent[2],data.img_extent[3]])
+        ax.axis('off')
+    return ax
+
+#%%
 '''
-Plotting Functions
+Main Plotting Functions
 '''
 
 def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end_custom = False, crop_interval = False, 
@@ -232,10 +250,20 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
 
     fig, ax = plt.subplots()
 
-    #import image
-    img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass_list[0].bkgd_img))
-    im = ax.imshow(img, extent=trialclass_list[0].img_extent) #plot image to match ethovision coordinates
-    
+    if hasattr(trialclass_list[0], 'arena_circle'):
+        # #crops the image to 130% of coordinate limits
+        # patch = patches.Circle(trialclass_list[0].arena_circle[:2], 
+        #                        radius=(trialclass_list[0].arena_circle[2]*1.3), 
+        #                        transform=ax.transData)
+        # im.set_clip_path(patch)
+        draw_arena(trialclass_list[0], ax)
+    else: 
+        print('Missing arena circle coordinates')
+        #import image
+        img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass_list[0].bkgd_img))
+        im = ax.imshow(img, extent=trialclass_list[0].img_extent) #plot image to match ethovision coordinates
+        
+
     if align_entrance:
         if all(trialclass_list[0].target != trialclass_list[1].target): #if the targets change between trials
             temp = plib.TrialData()
@@ -248,7 +276,9 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
                 elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
                 # else: t.r_nose_r = t.r_nose
     
-    colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
+    # colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
+    colours = iter(['k', '#C00021', '#004E89', '#F18701', '#FFD500'])
+    alpha = iter([0.3, 1, 1])
     # linestyles = iter(['-', '--', ':'])
     if isinstance(crop_end_custom, bool) == False: #checks to see if we are using custom crop coordinates
         if type(crop_end_custom) is not list: print('Error: crop custom not a list') #checks to make sure it is a list
@@ -285,15 +315,16 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
                 ax.add_artist(point1)
                 ax.add_artist(point2)
             
-        else: index = coords_to_target(t.r_nose, t.target)
+        elif crop_target: index = coords_to_target(t.r_nose, t.target)
+        else: index = len(t.r_nose)
         
         #gets starting index if plotting continuous trajectory
         if continuous == True: idx_start = continuous_coords_to_target(t, index)
         elif isinstance(crop_interval, bool) == True: idx_start = 0
 
         #plot path to target
-        try: ax.plot(t.r_nose_r[idx_start:index+1,0], t.r_nose_r[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
-        except: ax.plot(t.r_nose[idx_start:index+1,0], t.r_nose[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=1.) #iterates over colours until it ends at black, next(colours, 'k')
+        try: ax.plot(t.r_nose_r[idx_start:index+1,0], t.r_nose_r[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=next(alpha, 1)) #iterates over colours until it ends at black, next(colours, 'k')
+        except: ax.plot(t.r_nose[idx_start:index+1,0], t.r_nose[idx_start:index+1,1], ls='-', color= next(colours, 'k'), alpha=next(alpha, 1)) #iterates over colours until it ends at black, next(colours, 'k')
     
 
     #annotate image
@@ -304,17 +335,9 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
         target = plt.Circle((crop_end_custom), 2.5, color='b')
         ax.add_artist(target)
     elif crop_target:
-        target = plt.Circle((trialclass_list[0].target), 2.5, color='b')
+        target = plt.Circle((trialclass_list[0].target), 2.5, color='g')
         ax.add_artist(target)
     
-    
-    if hasattr(trialclass_list[0], 'arena_circle'):
-        #crops the image to 130% of coordinate limits
-        patch = patches.Circle(trialclass_list[0].arena_circle[:2], 
-                               radius=(trialclass_list[0].arena_circle[2]*1.3), 
-                               transform=ax.transData)
-        im.set_clip_path(patch)
-    else: print('Missing arena circle coordinates')
     
 
     # plt.style.use('default')
@@ -508,27 +531,13 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
     plt.show()
     
 #%%
-def draw_arena(data, ax):
-    #draws arena
-    Drawing_arena_circle = plt.Circle( (data.arena_circle[0], data.arena_circle[1]), 
-                                          data.arena_circle[2] , fill = False )
-    ax.add_artist( Drawing_arena_circle )
-    
-    for c in data.r_arena_holes:
-        small_hole = plt.Circle( (c[0], c[1] ), 0.5 , fill = False ,alpha=0.5)
-        ax.add_artist( small_hole )
-        
-        ax.set_aspect('equal','box')
-        ax.set_xlim([data.img_extent[2],data.img_extent[3]])
-        ax.set_ylim([data.img_extent[2],data.img_extent[3]])
-        ax.axis('off')
-    return ax
+
 
 def draw_hole_checks(data, idx_end, ax):
     k_times = data.k_hole_checks[data.k_hole_checks[:,1]<= idx_end] #crop at target
     
     colors_time_course = plt.get_cmap('cool') # plt.get_cmap('cool') #jet_r
-    t_seq_hole = data.time[k_times[:,1]]/data.time[data.k_reward-1]
+    t_seq_hole = data.time[k_times[:,1]]/data.time[idx_end-1]
     # t_seq_traj = data.time/data.time[data.k_reward-1]
         
     #plots hole checks

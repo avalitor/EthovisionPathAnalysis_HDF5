@@ -13,14 +13,14 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-# exp = plib.TrialData()
-# exp.Load('2023-07-07', '90', '15')
-# print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+exp = plib.TrialData()
+exp.Load('2023-12-18', 102, '13')
+print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
 
-# pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
+pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
 
 '''plot single traj hole check'''
-# pltlib.plot_hole_checks(exp)
+# pltlib.plot_hole_checks(exp, crop_at_target = True, time_limit = 'all', savefig=False)
 
 ''' plots a single mouse trajectory, cut off at REL target '''
 # objs = plib.TrialData()
@@ -52,15 +52,14 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 # pltlib.plot_multi_traj(objs, align_entrance=True, crop_rev= True, continuous = False, savefig = False)
 
-# objs = [plib.TrialData() for i in range(4)]
-# objs[0].Load('2022-09-20', '73', 'Probe2')
-# objs[1].Load('2022-09-20', '74', 'Probe2')
-# objs[2].Load('2022-09-20', '75', 'Probe2')
-# objs[3].Load('2022-09-20', '76', 'Probe2')
+# objs = [plib.TrialData() for i in range(3)]
+# objs[0].Load('2022-08-12', '69', '1')
+# objs[1].Load('2022-08-12', '69', '11')
+# objs[2].Load('2022-08-12', '69', '14')
 
 # for i in objs: print('Mouse %s Trial %s'%(i.mouse_number, i.trial))
 
-# pltlib.plot_multi_traj(objs, align_entrance=True, crop_rev= True, continuous = False, savefig = False)
+# pltlib.plot_multi_traj(objs, align_entrance=True, crop_target = True, crop_rev= False, continuous = False, savefig = False)
 
 
 '''plots multiple trajectories with custom coordinates'''
@@ -101,8 +100,8 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 
-(objs := plib.TrialData()).Load('2023-12-18', 102, 'Probe')
-pltlib.plot_heatmap(objs, '5min', False)
+# (objs := plib.TrialData()).Load('2023-12-18', 102, 'Probe')
+# pltlib.plot_heatmap(objs, '5min', False)
 
 # objs = [plib.TrialData() for i in range(4)] #3 local cue, not rotating correctly
 # objs[0].Load('2019-12-11', 17, 'Probe')
@@ -113,8 +112,6 @@ pltlib.plot_heatmap(objs, '5min', False)
 # objs[1].Load('2021-08-11', 46, 'Probe')
 # objs[2].Load('2021-08-11', 47, 'Probe')
 # objs[3].Load('2021-08-11', 48, 'Probe')
-
-
 
 
 # objs = [plib.TrialData() for i in range(14)]

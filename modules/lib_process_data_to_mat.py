@@ -179,6 +179,8 @@ class TrialData(): #container to store all trial data and metadata
         self.filename=m['filename'][0]
         if "velocity" in m: #checks if file has velocity info
             self.velocity = m['velocity'][0]
+        if "head_direction" in m: #checks if file has velocity info
+            self.velocity = m['head_direction'][0]
         if 'r_arena_holes' in m:
             self.r_arena_holes = m['r_arena_holes']
         if 'arena_circle' in m:
@@ -237,6 +239,7 @@ def get_excel_data(exp, eth_file):
         t.r_center = try_or_default(lambda: d[['X center','Y center']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X center or Y center' )
         t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X tail or Y tail' )
         t.velocity = try_or_default(lambda: d['Velocity'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Velocity' )
+        t.head_direction = try_or_default(lambda: d['Direction'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Direction' )
         
         #opens helper excel to get metadata
         i = pd.read_csv(fname2,header=0, index_col = 0)
