@@ -141,10 +141,20 @@ def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end
     '''
 
     fig, ax = plt.subplots()
+    
 
-    #import image
-    img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
-    im = ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
+    if hasattr(trialclass, 'arena_circle'):
+        # #crops the image to 130% of coordinate limits
+        # patch = patches.Circle(trialclass_list[0].arena_circle[:2], 
+        #                        radius=(trialclass_list[0].arena_circle[2]*1.3), 
+        #                        transform=ax.transData)
+        # im.set_clip_path(patch)
+        draw_arena(trialclass, ax)
+    else: 
+        print('Missing arena circle coordinates')
+        #import image
+        img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
+        im = ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
     
     line_colour = '#004E89'
     
@@ -204,19 +214,21 @@ def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end
         target = plt.Circle((trialclass.target), 2.5, color='b')
         ax.add_artist(target)
     
-    if hasattr(trialclass, 'arena_circle'):
-        #crops the image to 130% of coordinate limits
-        patch = patches.Circle(trialclass.arena_circle[:2], 
-                               radius=(trialclass.arena_circle[2]*1.3), 
-                               transform=ax.transData)
-        im.set_clip_path(patch)
-    else: print('Missing arena circle coordinates')
     
     if params.check_reverse(trialclass.exp, trialclass.trial) is True: #annotates false target, optional
         prev_target = plt.Circle((params.set_reverse_target(trialclass.exp, trialclass.entrance, trialclass.trial)), 2.5, color='r')
         ax.add_artist(prev_target)
 
     # plt.style.use('default')
+    
+    #draw entrance
+    for i, _ in enumerate(trialclass.r_nose):
+        if np.isnan(trialclass.r_nose[i][0]): continue
+        else:
+            first_coord = trialclass.r_nose[i]
+            break
+    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
+    ax.add_artist(entrance)   
     
     ax.axis('off') #remove border
 
