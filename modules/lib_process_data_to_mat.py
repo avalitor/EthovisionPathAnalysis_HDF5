@@ -180,7 +180,7 @@ class TrialData(): #container to store all trial data and metadata
         if "velocity" in m: #checks if file has velocity info
             self.velocity = m['velocity'][0]
         if "head_direction" in m: #checks if file has velocity info
-            self.velocity = m['head_direction'][0]
+            self.head_direction = m['head_direction'][0]
         if 'r_arena_holes' in m:
             self.r_arena_holes = m['r_arena_holes']
         if 'arena_circle' in m:
