@@ -17,6 +17,7 @@ from scipy.ndimage import gaussian_filter #for heatmap
 from modules import lib_process_data_to_mat as plib
 from modules import lib_experiment_parameters as params
 from modules.config import ROOT_DIR
+import modules.calc_latency_distance_speed as calc
 
 '''
 Helper Functions
@@ -569,6 +570,16 @@ def draw_entrance(data, ax):
     ax.add_artist(entrance)
     return ax
 
+def draw_heading(data, ax):
+    coords = data.r_center
+    coords_filter = coords[0::150]
+    heading_filter = data.heading[0::150]
+    for i, coord in enumerate(coords_filter):
+        
+        plt.axline(coord, slope=np.tan(np.radians(heading_filter[i])), color='red', label='axline')
+    return ax
+    
+
 def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=False):
     fig, ax = plt.subplots()
     
@@ -582,8 +593,8 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
     plt.plot(data.r_nose[:idx_end,0], data.r_nose[:idx_end,1], color='k', alpha=0.5) #plot path
     # ax.scatter(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], s=1.5, facecolors=colors_time_course(t_seq_traj[:idx_target])) #plot path with colours
     
-    # draw_heatmap(spike_coords, data.r_center, idx_end, ax, weighted=True)
-    # draw_traj_heatmap(data.r_center, idx_end, ax)
+    
+    # draw_heading(data, ax)
     
     # draw target
     target = plt.Circle((data.target), 2.5 , color='b', alpha=1)
@@ -598,12 +609,10 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
 
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
-    exp = plib.TrialData()
-    exp.Load('2023-08-15', '95', 'Probe')
-    print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
-    plot_hole_checks(exp, crop_at_target=False, time_limit = '5min')
+    data = plib.TrialData()
+    data.Load('2024-02-15', '105', '14')
+    print('Mouse %s Trial %s'%(data.mouse_number, data.trial))
+    plot_hole_checks(data, crop_at_target=False, time_limit = '5min')
 
-    # plot_2_target_analysis(exp, cropcoords = True)
-    
-    # plot_single_traj(data, show_target=False, cropcoords=False)
+
     pass

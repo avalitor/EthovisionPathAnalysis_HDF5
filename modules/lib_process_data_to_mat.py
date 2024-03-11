@@ -16,6 +16,7 @@ import glob #for file search
 
 from modules import lib_experiment_parameters as params
 from modules.config import DOCU, RAW_FILE_DIR, PROCESSED_FILE_DIR
+import modules.calc_latency_distance_speed as calc
 
 
 '''
@@ -179,8 +180,10 @@ class TrialData(): #container to store all trial data and metadata
         self.filename=m['filename'][0]
         if "velocity" in m: #checks if file has velocity info
             self.velocity = m['velocity'][0]
-        if "head_direction" in m: #checks if file has velocity info
+        if "head_direction" in m:
             self.head_direction = m['head_direction'][0]
+        if "heading" in m:
+            self.heading = m['heading'][0]
         if 'r_arena_holes' in m:
             self.r_arena_holes = m['r_arena_holes']
         if 'arena_circle' in m:
@@ -240,6 +243,7 @@ def get_excel_data(exp, eth_file):
         t.r_tail = try_or_default(lambda: d[['X tail','Y tail']][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'X tail or Y tail' )
         t.velocity = try_or_default(lambda: d['Velocity'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Velocity' )
         t.head_direction = try_or_default(lambda: d['Direction'][1:].to_numpy().astype(float), default=np.array([]), msg=err_msg%'Direction' )
+        t.heading = calc.heading(t)
         
         #opens helper excel to get metadata
         i = pd.read_csv(fname2,header=0, index_col = 0)

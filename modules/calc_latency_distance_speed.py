@@ -349,12 +349,22 @@ def iterate_angle_difference(target_vector, mouse_vector):
         angle_difference.append(angle_between(target_vector[i], mouse_vector[i]))
 
     return angle_difference
+
+def heading(exp):
+    #calculate mouse-direction vector
+    mouse_vector = np.diff(exp.r_center, axis=0)
+    mouse_heading = np.arctan2(mouse_vector[:,1],mouse_vector[:,0]) * (180 / np.pi)
+    mouse_heading = np.insert(mouse_heading, 0, np.nan) #add a nan value at the beginning so its the same size
+    return mouse_heading
 #%%
 if __name__ == '__main__':
     
     exp = plib.TrialData()
-    exp.Load('2019-10-07', '16', 'Probe')
-    dwells = compare_target_dwell(exp)
-    
+    exp.Load('2024-02-15', '105', '19')
+    test = exp.time
+    mouse_vector = np.diff(exp.r_center, axis=0)
+    heading = heading(exp)
+    velocity = exp.velocity
+    test3 = np.array([heading, exp.head_direction]).transpose()
     
     
