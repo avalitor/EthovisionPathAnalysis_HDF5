@@ -85,7 +85,7 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
     if experiment == '2023-09-18': background = 'BKGDimage-20230918.png'
     if experiment == '2023-10-16': background = 'BKGDimage-20231016.png'
     if experiment == '2023-12-18': background = 'BKGDimage-20231218.png'
-    if experiment == '2024-02-15': background = 'BKGDimage-20240215.png'
+    if experiment == '2024-02-15' or experiment == '2024-02-12': background = 'BKGDimage-20240215.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -344,6 +344,8 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = 38.10, 12.65
         if entrance == u'NW':
             target_coords = -12.65, 39.38
+    elif experiment == '2024-02-12':
+        target_coords = 1.85, -39.38
     elif experiment == '2024-02-15':
         target_coords = 39.38, 2.70
     return target_coords

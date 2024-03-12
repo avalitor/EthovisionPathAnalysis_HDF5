@@ -54,11 +54,11 @@ Single trial REL data
 '''
 Whole experiemnt before probe
 '''
-rotate = calc.iterate_all_trials(['2023-10-16','2023-12-18'], continuous= False, training_trials_only=True)
-ls.plot_latency(rotate, log=False, savefig = False)
-ls.plot_distance(rotate, log=False, savefig = False)
-ls.plot_speed(rotate, savefig = False)
-calc.curve_pValue(rotate)
+rotate = calc.iterate_all_trials(['2023-10-16', '2023-12-18', '2024-02-12', '2024-02-15'], continuous= False, training_trials_only=False)
+# ls.plot_latency(rotate, log=False, savefig = False)
+# ls.plot_distance(rotate, log=False, savefig = False)
+# ls.plot_speed(rotate, savefig = False)
+# calc.curve_pValue(rotate)
 
 '''
 3 Local Cues
@@ -90,6 +90,10 @@ calc.curve_pValue(rotate)
 # ATRX_trial = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], training_trials_only = False, continuous= False)
 # KO, WT = ATRX_trial['Distance'][['85','88','91','92','93','94','98']], ATRX_trial['Distance'][['86','87','89','90','95','96','97']]
 # ls.plot_compare_curves(KO, WT, 'KO', 'WT', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
+
+# compare_trial = calc.iterate_all_trials(['2023-10-16', '2023-12-18', '2024-02-12', '2024-02-15'], training_trials_only = False, continuous= False)
+# old, new = compare_trial['Distance'][['101', '102', '103']], compare_trial['Distance'][['104', '105']]
+# ls.plot_compare_curves(old, new, 'No 30min', 'Yes 30min', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
 
 '''
 DISTANCE BETWEEN TARGETS
