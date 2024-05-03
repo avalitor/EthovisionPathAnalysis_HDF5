@@ -23,7 +23,7 @@ import modules.config as cfg
 #%%
 '''Whole experiment import'''
 
-experiment = '2024-02-12'
+experiment = '2024-02-06'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
@@ -41,7 +41,7 @@ for f in os.listdir(os.path.join(cfg.RAW_FILE_DIR, experiment+'_Raw Trial Data')
 # experiment = '2023-10-16'
 
 exp = plib.TrialData()
-exp.Load(experiment, '*', 'Probe') #use this trial's image as the standard
+exp.Load(experiment, '*', '17') #use this trial's image as the standard
 arena_circle, gray = phc.detect_arena_circle(os.path.join(cfg.ROOT_DIR, 'data', 'BackgroundImage', exp.bkgd_img), 
                                              mask_sensitivity=60.)
 holes = phc.detect_arena_hole_coords(arena_circle, gray)
@@ -78,7 +78,7 @@ for files in os.listdir(os.path.join(cfg.PROCESSED_FILE_DIR, experiment)):
    
     d.k_hole_checks = main_wrap_get_time(d)[1]
     d.k_reward = pltlib.coords_to_target(d.r_nose, d.target)
-    # d.heading = calc.heading(d)
+    d.heading = calc.heading(d)
     print (f'Mouse {d.mouse_number} Trial {d.trial} Reward Idx: {d.k_reward}')
     d.Update()
 #%%
