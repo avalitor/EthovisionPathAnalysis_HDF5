@@ -230,7 +230,7 @@ def calc_search_bias(experiment, trial = 'Probe', time_limit = '2min', radius=15
                 total_dwell = total_dwell + compare_target_dwell(d, d.target, time_limit, radius)
                 print('read mouse ' +files.split('_')[-2].split('.')[0][1:])
     return total_dwell
-
+#%%
 '''
 Calculate spread along symmetry line betwen two points
 '''
@@ -359,12 +359,9 @@ def heading(exp):
 #%%
 if __name__ == '__main__':
     
-    exp = plib.TrialData()
-    exp.Load('2024-02-15', '105', '19')
-    test = exp.time
-    mouse_vector = np.diff(exp.r_center, axis=0)
-    heading = heading(exp)
-    velocity = exp.velocity
-    test3 = np.array([heading, exp.head_direction]).transpose()
+    d = plib.TrialData()
+    d.Load('2021-07-16', '37', 'Probe')
+    test = compare_target_dwell(d, d.target, '2min', radius=15.)
+    test2 = calc_search_bias(['2021-07-16', '2021-11-15'], '2min')
     
     

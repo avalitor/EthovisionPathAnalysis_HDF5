@@ -320,7 +320,7 @@ def plot_percent_bar(data, savefig= False):
     Q4 = (data[3]*100)/np.sum(data)
     
     ax.broken_barh([(start, Q1), (Q1, Q2), (Q1+Q2, Q3), (Q1+Q2+Q3, Q4)], [0.3, 2], 
-                   edgecolor = 'k', facecolors=('#C00021', '#ffffff', '#ffffff', '#ffffff'))
+                   edgecolor = 'k', facecolors=('#44aa00', '#ffffff', '#ffffff', '#ffffff')) #red is C00021
     ax.set_ylim(0, 30)
     ax.set_xlim(0, 101)
     
@@ -358,5 +358,5 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    d = calc.calc_search_bias(['2023-07-07'], 'Probe', '2min', 15.)
+    d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], '2min')
     plot_percent_bar(d)
