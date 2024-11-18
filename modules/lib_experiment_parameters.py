@@ -89,6 +89,7 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
     if experiment == '2024-02-06': background = 'BKGDimage-20240206.png'
     if experiment == '2024-05-06': background = 'BKGDimage-20240506.png'
     if experiment == '2024-09-23': background = 'BKGDimage-20240923.png'
+    if experiment == '2024-06-27': background = 'BKGDimage-20240627.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -107,6 +108,11 @@ def get_mouse_sex(experiment, mouse):
             mouse_sex = 'female'
         else:
             mouse_sex = 'male'
+    if experiment == '2024-06-27':
+        if mouse == '1': 
+            mouse_sex = 'male'
+        if mouse == '2':
+            mouse_sex = 'female'
     return mouse_sex
 
 #manually sets food target coordinates based on experiment
@@ -383,6 +389,19 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = -37.64, -12.76
         if entrance == u'NW':
             target_coords = 13.86, -37.95
+    elif experiment == '2024-06-27':
+        targA_trials = [*range(1, 19, 1)]+[32, 34, 36, 37, 39, 41, 44, 46, 48]
+        targB_trials = [*range(19, 31, 1)]+[31, 33, 35, 38, 40, 42, 43, 45, 47]
+        if (trial_condition.isdigit() is True and int(trial_condition) in targA_trials) or trial_condition == 'Probe' or trial_condition.startswith(u'Habituation'):
+            if entrance == u'NE': #target A
+                target_coords = 39.67,2.27
+            if entrance == u'NW':
+                target_coords = -2.42, 40.52
+        elif (trial_condition.isdigit() is True and int(trial_condition) in targB_trials) or trial_condition == 'Probe2':
+            if entrance == u'NE': #target B
+                target_coords = -23.18, -18.20
+            if entrance == u'NW':
+                target_coords = 18.06, -22.61
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
@@ -545,4 +564,17 @@ def set_reverse_target(experiment, entrance, trial_condition):
             reverse_target_coords = -39.00, -12.38
         if entrance == u'NW':
             reverse_target_coords = 11.67, -38.15
+    elif experiment == '2024-06-27':
+        targA_trials = [32, 34, 36, 37, 39, 41, 44, 46, 48]
+        targB_trials = [*range(19, 31, 1)]+[31, 33, 35, 38, 40, 42, 43, 45, 47]
+        if (trial_condition.isdigit() is True and int(trial_condition) in targB_trials) or trial_condition == 'Probe2':
+            if entrance == u'NE': #target A
+                reverse_target_coords = 39.67,2.27
+            if entrance == u'NW':
+                reverse_target_coords = -2.42, 40.52
+        elif trial_condition.isdigit() is True and int(trial_condition) in targA_trials:
+            if entrance == u'NE': #target B
+                reverse_target_coords = -23.18, -18.20
+            if entrance == u'NW':
+                reverse_target_coords = 18.06, -22.61
     return reverse_target_coords
