@@ -111,6 +111,38 @@ def draw_arena(data, ax):
         ax.axis('off')
     return ax
 
+def draw_hole_checks(data, idx_end, ax):
+    k_times = data.k_hole_checks[data.k_hole_checks[:,1]<= idx_end] #crop at target
+    
+    colors_time_course = plt.get_cmap('cool') # plt.get_cmap('cool') #jet_r
+    t_seq_hole = data.time[k_times[:,1]]/data.time[idx_end-1]
+    # t_seq_traj = data.time/data.time[data.k_reward-1]
+        
+    #plots hole checks
+    ax.scatter(data.r_arena_holes[k_times[:,0]][:,0], data.r_arena_holes[k_times[:,0]][:,1], 
+               s=50, marker = 'o', facecolors='none', edgecolors=colors_time_course(t_seq_hole), 
+               linewidths=2.)
+    return ax
+
+def draw_entrance(data, ax):
+    #draw entrance
+    for i, _ in enumerate(data.r_nose):
+        if np.isnan(data.r_nose[i][0]): continue
+        else:
+            first_coord = data.r_nose[i]
+            break
+    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
+    ax.add_artist(entrance)
+    return ax
+
+def draw_heading(data, ax):
+    coords = data.r_center
+    coords_filter = coords[0::150] #only plot one of every 150 coordinates
+    heading_filter = data.heading[0::150]
+    for i, coord in enumerate(coords_filter):
+        plt.axline(coord, slope=np.tan(np.radians(heading_filter[i])), color='red', label='axline')
+    return ax
+
 #%%
 '''
 Main Plotting Functions
@@ -156,6 +188,7 @@ def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end
         #import image
         img = mpimg.imread(os.path.join(ROOT_DIR, 'data', 'BackgroundImage', trialclass.bkgd_img))
         im = ax.imshow(img, extent=trialclass.img_extent) #plot image to match ethovision coordinates
+        ax.axis('off') #remove border
     
     line_colour = '#004E89'
     
@@ -223,16 +256,8 @@ def plot_single_traj(trialclass, show_target = True, cropcoords = True, crop_end
     # plt.style.use('default')
     
     #draw entrance
-    for i, _ in enumerate(trialclass.r_nose):
-        if np.isnan(trialclass.r_nose[i][0]): continue
-        else:
-            first_coord = trialclass.r_nose[i]
-            break
-    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
-    ax.add_artist(entrance)   
+    draw_entrance(trialclass, ax)  
     
-    ax.axis('off') #remove border
-
     if savefig == True:
         plt.savefig(ROOT_DIR+'/figures/Plot_%s_M%s_%s.png'%(trialclass.protocol_name, trialclass.mouse_number, trialclass.trial), dpi=600, bbox_inches='tight', pad_inches = 0)
         
@@ -545,41 +570,6 @@ def plot_2_target_analysis(trialclass, cropcoords = True, crop_end_custom = Fals
     
 #%%
 
-
-def draw_hole_checks(data, idx_end, ax):
-    k_times = data.k_hole_checks[data.k_hole_checks[:,1]<= idx_end] #crop at target
-    
-    colors_time_course = plt.get_cmap('cool') # plt.get_cmap('cool') #jet_r
-    t_seq_hole = data.time[k_times[:,1]]/data.time[idx_end-1]
-    # t_seq_traj = data.time/data.time[data.k_reward-1]
-        
-    #plots hole checks
-    ax.scatter(data.r_arena_holes[k_times[:,0]][:,0], data.r_arena_holes[k_times[:,0]][:,1], 
-               s=50, marker = 'o', facecolors='none', edgecolors=colors_time_course(t_seq_hole), 
-               linewidths=2.)
-    return ax
-
-def draw_entrance(data, ax):
-    #draw entrance
-    for i, _ in enumerate(data.r_nose):
-        if np.isnan(data.r_nose[i][0]): continue
-        else:
-            first_coord = data.r_nose[i]
-            break
-    entrance = plt.Rectangle((first_coord-3.5), 7, 7, fill=False, color='k', alpha=0.8, lw=3)
-    ax.add_artist(entrance)
-    return ax
-
-def draw_heading(data, ax):
-    coords = data.r_center
-    coords_filter = coords[0::150]
-    heading_filter = data.heading[0::150]
-    for i, coord in enumerate(coords_filter):
-        
-        plt.axline(coord, slope=np.tan(np.radians(heading_filter[i])), color='red', label='axline')
-    return ax
-    
-
 def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=False):
     fig, ax = plt.subplots()
     
@@ -594,7 +584,7 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
     # ax.scatter(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], s=1.5, facecolors=colors_time_course(t_seq_traj[:idx_target])) #plot path with colours
     
     
-    # draw_heading(data, ax)
+    draw_heading(data, ax)
     
     # draw target
     target = plt.Circle((data.target), 2.5 , color='b', alpha=1)
@@ -609,10 +599,10 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
 
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
-    data = plib.TrialData()
-    data.Load('2024-02-15', '105', '14')
-    print('Mouse %s Trial %s'%(data.mouse_number, data.trial))
-    plot_hole_checks(data, crop_at_target=False, time_limit = '5min')
+    d = plib.TrialData()
+    d.Load('2024-06-27', '2', '34')
+    print('Mouse %s Trial %s'%(d.mouse_number, d.trial))
+    plot_hole_checks(d, crop_at_target=False, time_limit = '5min')
 
 
     pass

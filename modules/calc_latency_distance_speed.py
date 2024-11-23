@@ -319,11 +319,38 @@ def angle_between(v1, v2):
 #     theta = np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))) * (180 / np.pi)
 #     return theta
 
-def vector_to_target(exp, coord_target, coord_end, coord_start = None):
+def vector_to_target(exp, coord_target, coord_start = None, coord_end= None):
+    '''
+
+    Parameters
+    ----------
+    exp : class
+        trialclass.
+    coord_target : tuple
+        xy coordinates.
+    coord_end : TYPE, optional
+        DESCRIPTION. xy coordinates for the end of the range. The default is None.
+    coord_start : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Returns
+    -------
+    target_vector : array of tuples
+        x and y components of the vector pointing from mouse to target.
+    target_direction : arr of float
+        array of degrees.
+    mouse_vector : array of tuples
+        x and y compoments of the vector pointing from mouse center point to mouse nose.
+    mouse_direction : arr of float
+        array of degrees.
+
+    '''
     if coord_start is None: idx_start = 0
     else:
         idx_start = pltlib.coords_to_target(exp.r_nose, coord_start)
-    idx_end = pltlib.coords_to_target(exp.r_nose, coord_end)
+    if coord_end is None: idx_end = len(exp.time)
+    else:
+        idx_end = pltlib.coords_to_target(exp.r_nose, coord_end)
     
     # calculate mouse-to-target vector
     target_vector = coord_target - exp.r_center[idx_start:idx_end]
@@ -342,13 +369,23 @@ def vector_to_target(exp, coord_target, coord_end, coord_start = None):
 #                          mat['r_nose'][:idx_end, 1] - mat['r_center'][:idx_end, 1]])
 # mouse_direction = np.arctan(mouse_vector[0] / mouse_vector[1]) * (180 / np.pi)
 
-def iterate_angle_difference(target_vector, mouse_vector):
+def iterate_angle_difference_vector(target_vector, mouse_vector):
     # calculate difference in angle between mouse direction and target direction
     angle_difference = []
     for i, _ in enumerate(mouse_vector):
         angle_difference.append(angle_between(target_vector[i], mouse_vector[i]))
 
     return angle_difference
+
+def iterate_angle_difference_vector_degree(target_direction, mouse_direction):
+    '''Use this one because you can use mouse heading instead of body-to-nose direction'''
+    # Compute the raw difference in angles
+    diff = target_direction - mouse_direction
+    
+    # Adjust differences to be within the range -180 to 180 degrees
+    diff = (diff + 180) % 360 - 180
+    
+    return diff
 
 def heading(exp):
     #calculate mouse-direction vector
@@ -360,8 +397,17 @@ def heading(exp):
 if __name__ == '__main__':
     
     d = plib.TrialData()
-    d.Load('2021-07-16', '37', 'Probe')
-    test = compare_target_dwell(d, d.target, '2min', radius=15.)
-    test2 = calc_search_bias(['2021-07-16', '2021-11-15'], '2min')
+    d.Load('2024-06-27', '2', '34')
+    t_vec, t_dir, m_vec, m_dir = vector_to_target(d, d.target)
+    angle_diff = iterate_angle_difference_vector_degree(t_dir, d.heading)
     
+    #below is a plot test
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 3))
+    cutoff = len(d.time)
+    x = d.time
+    y = angle_diff
+    ax.plot(x[:cutoff], y[:cutoff],'-',c='k',alpha=0.5)
+    plt.vlines(d.time[d.k_reward], -150, 150, linestyles='--', color='r') #target reached!
+    plt.show()
     

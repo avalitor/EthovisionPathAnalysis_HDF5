@@ -13,12 +13,12 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-exp = plib.TrialData()
-exp.Load('2024-06-27', '2', '34')
-print('Mouse %s Trial %s'%(exp.mouse_number, exp.trial))
+d = plib.TrialData()
+d.Load('2024-06-27', '2', '31')
+print('Mouse %s Trial %s'%(d.mouse_number, d.trial))
 
 # pltlib.coords_to_target(exp.r_nose, exp.target)
-pltlib.plot_single_traj(exp, show_target=True, cropcoords = True, savefig=False)
+pltlib.plot_single_traj(d, show_target=True, cropcoords = True, savefig=False)
 
 '''plot single traj hole check'''
 # pltlib.plot_hole_checks(exp, crop_at_target = True, time_limit = 'all', savefig=False)
