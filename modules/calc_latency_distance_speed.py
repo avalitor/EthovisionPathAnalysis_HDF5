@@ -370,14 +370,14 @@ def vector_to_target(exp, coord_target, coord_start = None, coord_end= None):
 # mouse_direction = np.arctan(mouse_vector[0] / mouse_vector[1]) * (180 / np.pi)
 
 def iterate_angle_difference_vector(target_vector, mouse_vector):
-    # calculate difference in angle between mouse direction and target direction
+    # calculate difference in angle between mouse direction and target direction using two input vectors
     angle_difference = []
     for i, _ in enumerate(mouse_vector):
         angle_difference.append(angle_between(target_vector[i], mouse_vector[i]))
 
     return angle_difference
 
-def iterate_angle_difference_vector_degree(target_direction, mouse_direction):
+def iterate_angle_difference(target_direction, mouse_direction):
     '''Use this one because you can use mouse heading instead of body-to-nose direction'''
     # Compute the raw difference in angles
     diff = target_direction - mouse_direction
@@ -399,7 +399,7 @@ if __name__ == '__main__':
     d = plib.TrialData()
     d.Load('2024-06-27', '2', '34')
     t_vec, t_dir, m_vec, m_dir = vector_to_target(d, d.target)
-    angle_diff = iterate_angle_difference_vector_degree(t_dir, d.heading)
+    angle_diff = iterate_angle_difference(t_dir, d.heading)
     
     #below is a plot test
     import matplotlib.pyplot as plt
