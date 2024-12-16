@@ -91,6 +91,7 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
     if experiment == '2024-09-23': background = 'BKGDimage-20240923.png'
     if experiment == '2024-06-27': background = 'BKGDimage-20240627.png'
     if experiment == '2024-11-08': background = 'BKGDimage-20241108.png'
+    if experiment == '2024-11-28': background = 'BKGDimage-20241128.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -412,6 +413,15 @@ def set_target(experiment, entrance, trial_condition):
             target_coords = -38.35, -12.94
         if entrance == u'NW':
             target_coords = 13.09, -38.35
+    elif experiment == '2024-11-28':
+        if entrance == u'SW':
+            target_coords = 38.40, 13.73
+        if entrance == u'SE':
+            target_coords = -2.93, 40.72
+        if entrance == u'NE':
+            target_coords = -38.09, -12.49
+        if entrance == u'NW':
+            target_coords = 12.96, -37.94
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
