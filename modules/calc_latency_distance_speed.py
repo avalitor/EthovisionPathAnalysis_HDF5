@@ -125,16 +125,16 @@ def iterate_all_trials(experiment, training_trials_only = True, continuous = Fal
                         latency.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[0]
                         distance.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[1]
                         speed.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[2]
-            else: #NOT FINISHED, need to figure out how to exclude habituation trials
-                # if files.split('_')[-1].split('.')[0].isdigit(): #checks if it is a training file
-                d = plib.TrialData()
-                d.Load(exp, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
-                
-                if show_load: print('Reading M%s Trial %s'%(d.mouse_number, d.trial))
-    
-                latency.at[d.trial, d.mouse_number] = calc_lat_dist_sped(d, continuous)[0]
-                distance.at[d.trial, d.mouse_number] = calc_lat_dist_sped(d, continuous)[1]
-                speed.at[d.trial, d.mouse_number] = calc_lat_dist_sped(d, continuous)[2]
+            else: #does not include probe or other non-digit trials
+                if files.split('_')[-1].split('.')[0].isdigit(): #checks if it is a training file, excludes habituation and probe trials
+                    d = plib.TrialData()
+                    d.Load(exp, files.split('_')[-2].split('.')[0][1:], files.split('_')[-1].split('.')[0])
+                    
+                    if show_load: print('Reading M%s Trial %s'%(d.mouse_number, d.trial))
+        
+                    latency.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[0]
+                    distance.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[1]
+                    speed.at[int(d.trial), d.mouse_number] = calc_lat_dist_sped(d, continuous)[2]
     
     return {'Latency': latency.sort_index(axis=0), 'Distance': distance.sort_index(axis=0),'Speed': speed.sort_index(axis=0)}  #sorts trials into the correct order and saves as combined dict
 

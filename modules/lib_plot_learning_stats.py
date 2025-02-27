@@ -266,6 +266,8 @@ def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, l
     
     if show_sig:
         t_test = stats.ttest_ind(y1, y2, axis=1, nan_policy = 'omit')[1]
+        t_values = stats.ttest_ind(y1, y2, axis=1, nan_policy = 'omit')[0]
+        
         
         def convert_pvalue_to_asterisks(pvalue):
             if pvalue <= 0.0001:
@@ -289,6 +291,8 @@ def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, l
             # plt.text(x=idx+1, y=y_position, s=pval)
             ax.annotate(pval, (x[idx], y_position[idx]))
             print(f'Trial {x[idx]} is {pval}')
+            
+        # return t_test, t_values
     
     ax.set_xlabel('Trials', fontsize=13)
     ax.set_ylabel(ylabel, fontsize=13)
@@ -300,6 +304,7 @@ def plot_compare_curves(data1, data2, label1, label2, ylabel, show_sig = True, l
     ax.spines['top'].set_visible(False) 
     ax.spines['right'].set_visible(False) 
     ax.xaxis.set_major_locator(ticker.MultipleLocator(2)) #sets x-axis spacing
+    plt.xlim(left=0) #force graph to start at 0
     
     if log:
         ax.set(yscale="log") #set a logarithmic scale
@@ -358,5 +363,11 @@ def plot_percent_bar(data, savefig= False):
     plt.show()
 
 if __name__ == '__main__':
-    d = calc.calc_search_bias(['2021-07-16', '2021-11-15'], '2min')
-    plot_percent_bar(d)
+    
+    ATRX_trial = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], training_trials_only = False, continuous= False, show_load = False)
+    KO, WT = ATRX_trial['Distance'][['85','88','91','92','93','94','98']], ATRX_trial['Distance'][['86','87','89','90','95','96','97']]
+    plot_compare_curves(KO, WT, 'KO', 'WT', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
+    
+    KO, WT = ATRX_trial['Latency'][['85','88','91','92','93','94','98']], ATRX_trial['Latency'][['86','87','89','90','95','96','97']]
+    plot_compare_curves(KO, WT, 'KO', 'WT', "Latency (s)", show_sig = True, log = True, crop_trial = False, savefig=False)
+    

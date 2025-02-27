@@ -304,18 +304,22 @@ def plot_multi_traj(trialclass_list, align_entrance = True, crop_target = False,
 
     if align_entrance:
         if all(trialclass_list[0].target != trialclass_list[1].target): #if the targets change between trials
-            temp = plib.TrialData()
-            temp.Load(trialclass_list[0].exp, '*', 'Probe')
-            origin = get_arena_center(temp.r_nose) #get center of rotation
+            if hasattr(trialclass_list[0], 'arena_circle'): origin = trialclass_list[0].arena_circle[:2]
+            else:
+                temp = plib.TrialData()
+                temp.Load(trialclass_list[0].exp, '*', 'Probe')
+                origin = get_arena_center(temp.r_nose) #get center of rotation
             for t in trialclass_list: #rotate all coordinates so they align
-                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
                 if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
                 elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
                 elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
                 # else: t.r_nose_r = t.r_nose
+                
+        #draw entrance
+        draw_entrance(trialclass_list[0], ax)
     
     # colours = iter(['#004E89', '#C00021', '#5F0F40', '#F18701', '#FFD500'])
-    colours = iter(['k', '#C00021', '#004E89', '#F18701', '#FFD500'])
+    colours = iter(['k', '#C00021', '#004E89', '#F18701', '#FFD500']) #black, red, blue, orange, yellow
     alpha = iter([0.3, 1, 1])
     # linestyles = iter(['-', '--', ':'])
     if isinstance(crop_end_custom, bool) == False: #checks to see if we are using custom crop coordinates
@@ -393,11 +397,13 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
         first_trial = trialclass_list[0]
 
         if all(first_trial.target != trialclass_list[1].target): #if the targets change between trials
-            temp = plib.TrialData()
-            temp.Load(first_trial.exp, '*', 'Probe')
-            origin = get_arena_center(temp.r_nose) #get center of rotation
+            # print('target is changing')
+            if hasattr(first_trial, 'arena_circle'): origin = first_trial.arena_circle[:2]
+            else:
+                temp = plib.TrialData()
+                temp.Load(first_trial.exp, '*', 'Probe')
+                origin = get_arena_center(temp.r_nose) #get center of rotation
             for t in trialclass_list: #rotate all coordinates so they align
-                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
                 if t.entrance == 'SE': t.r_nose_r = rotate(t.r_nose, origin, 270)
                 elif t.entrance == 'NE': t.r_nose_r = rotate(t.r_nose, origin, 180)
                 elif t.entrance == 'NW': t.r_nose_r = rotate(t.r_nose, origin, 90)
@@ -405,11 +411,11 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
         
         
             if all(first_trial.target != trialclass_list[-1].target): #if target changes between experiments
-                temp = plib.TrialData()
-                temp.Load(trialclass_list[-1].exp, '*', 'Probe')
-                origin = get_arena_center(temp.r_nose) #get center of rotation
-                if hasattr(t, 'arena_circle'): origin = t.arena_circle[:2]
-    
+                if hasattr(trialclass_list[-1], 'arena_circle'): origin = trialclass_list[-1].arena_circle[:2]
+                else:
+                    temp = plib.TrialData()
+                    temp.Load(trialclass_list[-1].exp, '*', 'Probe')
+                    origin = get_arena_center(temp.r_nose) #get center of rotation    
                 for t in trialclass_list:
                     if len(t.time)>0: #checks to see if list data is not empty
                         if t.exp == u'2021-11-15': 
@@ -418,7 +424,9 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
                         elif t.exp == u'2021-08-11':
                             t.r_nose_r = rotate(t.r_nose, origin, 90) #so it matches experiment 2019-12-11 **NOT WORKING**
                             print(t.mouse + t.trial)
-                        else: t.r_nose_r = t.r_nose
+
+                        
+        # else: print('target NOT aligned')
         
         combocoords = np.empty([0,2])
         for t in trialclass_list:
@@ -456,8 +464,14 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     #                        transform=ax.transData)
     # im.set_clip_path(patch)
     
-    #plot path
-    # ax.plot(x, y, ls='-', color = 'red')
+    #plot paths
+    # ax.plot(x, y, ls='-', color = 'red') #plot single path
+    #plot multiple paths
+    # colours = iter(['k', '#C00021', '#004E89', '#F18701', '#FFD500'])
+    # alpha = iter([0.3, 1, 1])
+    # for t in trialclass_list:
+    #     index = coords_to_target(t.r_nose, t.target)
+    #     ax.plot(t.r_nose_r[:index+1,0], t.r_nose_r[:index+1,1], ls='-', color= next(colours, 'k'), alpha=next(alpha, 1))
     
     #plot heatmap
     img, extent = make_heatmap(x, y, 32)
@@ -467,8 +481,11 @@ def plot_heatmap(trialclass_list, time_limit = '2min', savefig = False):
     # plt.colorbar(mappable=hm) #add colorbar
     
     #plot target
-    target = plt.Circle((first_trial.target), radius = 15., fill = False, ec = 'g', linestyle = '--')
-    ax.add_artist(target)
+    for t in trialclass_list:
+        if t.entrance == 'SW':
+            target = plt.Circle((t.target), radius = 15., fill = False, ec = 'g', linestyle = '--')
+            ax.add_artist(target)
+            break
     
     #scales the heatmap to match the background picture
     plt.xlim(first_trial.img_extent[0], first_trial.img_extent[1]) 
@@ -584,7 +601,7 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
     # ax.scatter(data.r_nose[:idx_target,0], data.r_nose[:idx_target,1], s=1.5, facecolors=colors_time_course(t_seq_traj[:idx_target])) #plot path with colours
     
     
-    draw_heading(data, ax)
+    # draw_heading(data, ax)
     
     # draw target
     target = plt.Circle((data.target), 2.5 , color='b', alpha=1)
@@ -599,10 +616,30 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
 
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
-    d = plib.TrialData()
-    d.Load('2024-06-27', '2', '34')
-    print('Mouse %s Trial %s'%(d.mouse_number, d.trial))
-    plot_hole_checks(d, crop_at_target=False, time_limit = '5min')
+
+    
+    probe_wt = [plib.TrialData() for i in range(7)] #WT mice during the probe trial after training
+    probe_wt[0].Load('2023-07-07', '86', 'Probe')
+    probe_wt[1].Load('2023-07-07', '87', 'Probe')
+    probe_wt[2].Load('2023-07-07', '89', 'Probe')
+    probe_wt[3].Load('2023-07-07', '90', 'Probe')
+    probe_wt[4].Load('2023-08-15', '95', 'Probe')
+    probe_wt[5].Load('2023-08-15', '96', 'Probe')
+    probe_wt[6].Load('2023-08-15', '97', 'Probe')
+    
+    probe_ko = [plib.TrialData() for i in range(7)] #KO mice after training
+    probe_ko[0].Load('2023-07-07', '85', 'Probe')
+    probe_ko[1].Load('2023-07-07', '88', 'Probe')
+    probe_ko[2].Load('2023-08-15', '91', 'Probe')
+    probe_ko[3].Load('2023-08-15', '92', 'Probe')
+    probe_ko[4].Load('2023-08-15', '93', 'Probe')
+    probe_ko[5].Load('2023-08-15', '94', 'Probe')
+    probe_ko[6].Load('2023-08-15', '98', 'Probe')
+    
+    plot_heatmap(probe_wt, '2min', False)
+    plot_heatmap(probe_ko, '2min', False)
+    # plot_multi_traj(probe_wt, True, True)
+    # plot_single_traj(probe_wt[5])
 
 
     pass

@@ -54,11 +54,11 @@ Single trial REL data
 '''
 Whole experiemnt before probe
 '''
-rotate = calc.iterate_all_trials(['2022-08-12'], continuous= False, training_trials_only=True)
-ls.plot_latency(rotate, log=True, savefig = False)
-ls.plot_distance(rotate, log=True, savefig = False)
-ls.plot_speed(rotate, savefig = False)
-calc.curve_pValue(rotate)
+# rotate = calc.iterate_all_trials(['2022-08-12'], continuous= False, training_trials_only=True)
+# ls.plot_latency(rotate, log=True, savefig = False)
+# ls.plot_distance(rotate, log=True, savefig = False)
+# ls.plot_speed(rotate, savefig = False)
+# calc.curve_pValue(rotate)
 
 '''
 3 Local Cues
@@ -95,6 +95,15 @@ calc.curve_pValue(rotate)
 # old, new = compare_trial['Distance'][['101', '102', '103']], compare_trial['Distance'][['104', '105']]
 # ls.plot_compare_curves(old, new, 'No 30min', 'Yes 30min', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
 
+ATRX_trial = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], training_trials_only = False, continuous= False, show_load = False)
+KO, WT = ATRX_trial['Distance'][['85','88','91','92','93','94','98']], ATRX_trial['Distance'][['86','87','89','90','95','96','97']]
+ls.plot_compare_curves(KO, WT, 'KO', 'WT', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
+
+# KO = KO[2:]
+# WT = WT[2:]
+# ls.plot_compare_curves(KO, WT, 'KO', 'WT', "Distance (cm)", show_sig = True, log = True, crop_trial = False, savefig=False)
+
+
 '''
 DISTANCE BETWEEN TARGETS
 ************************
@@ -105,3 +114,11 @@ DISTANCE BETWEEN TARGETS
 
 # dist_AB = calc.calc_dist_bw_points(exp.r_center, exp.target_reverse, exp.target) #calculate distance between two points
 # print(f'Distance between targets for Mouse {exp.mouse_number} during {exp.trial} is {round(dist_AB, 2)} cm')
+
+'''boxplot distance'''
+# ATRX_trial = calc.iterate_all_trials(['2023-07-07', '2023-08-15'], training_trials_only = False, continuous= False, show_load = False)
+# KO, WT = ATRX_trial['Distance'][['85','88','91','92','93','94','98']], ATRX_trial['Distance'][['86','87','89','90','95','96','97']]
+# distance_early_wt = WT[0:4].values.flatten().tolist()
+# distance_early_ko = KO[0:4].values.flatten().tolist()
+# distance_late_wt = WT[-4:].values.flatten().tolist()
+# distance_late_ko = KO[-4:].values.flatten().tolist()
