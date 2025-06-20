@@ -617,27 +617,9 @@ def plot_hole_checks(data, crop_at_target = True, time_limit = 'all', savefig=Fa
 
 if __name__ == '__main__': #only runs this function if the script top level AKA is running by itself
 
-    
-    probe_wt = [plib.TrialData() for i in range(7)] #WT mice during the probe trial after training
-    probe_wt[0].Load('2023-07-07', '86', 'Probe')
-    probe_wt[1].Load('2023-07-07', '87', 'Probe')
-    probe_wt[2].Load('2023-07-07', '89', 'Probe')
-    probe_wt[3].Load('2023-07-07', '90', 'Probe')
-    probe_wt[4].Load('2023-08-15', '95', 'Probe')
-    probe_wt[5].Load('2023-08-15', '96', 'Probe')
-    probe_wt[6].Load('2023-08-15', '97', 'Probe')
-    
-    probe_ko = [plib.TrialData() for i in range(7)] #KO mice after training
-    probe_ko[0].Load('2023-07-07', '85', 'Probe')
-    probe_ko[1].Load('2023-07-07', '88', 'Probe')
-    probe_ko[2].Load('2023-08-15', '91', 'Probe')
-    probe_ko[3].Load('2023-08-15', '92', 'Probe')
-    probe_ko[4].Load('2023-08-15', '93', 'Probe')
-    probe_ko[5].Load('2023-08-15', '94', 'Probe')
-    probe_ko[6].Load('2023-08-15', '98', 'Probe')
-    
-    plot_heatmap(probe_wt, '2min', False)
-    plot_heatmap(probe_ko, '2min', False)
+    d = plib.TrialData()
+    d.Load('2025-05-07', '43', '30')
+    d.k_reward = coords_to_target(d.r_nose, d.target)
     # plot_multi_traj(probe_wt, True, True)
     # plot_single_traj(probe_wt[5])
 

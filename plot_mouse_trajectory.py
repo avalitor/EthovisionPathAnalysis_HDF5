@@ -13,12 +13,12 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plot single traj'''
-# d = plib.TrialData()
-# d.Load('2024-11-28', '41', '19')
-# print('Mouse %s Trial %s'%(d.mouse_number, d.trial))
+d = plib.TrialData()
+d.Load('2025-05-07', '43', '30')
+print('Mouse %s Trial %s'%(d.mouse_number, d.trial))
 
 # pltlib.coords_to_target(exp.r_nose, exp.target)
-# pltlib.plot_single_traj(d, show_target=True, cropcoords = True, savefig=False)
+pltlib.plot_single_traj(d, show_target=True, cropcoords = True, savefig=False)
 
 '''plot single traj hole check'''
 # pltlib.plot_hole_checks(exp, crop_at_target = True, time_limit = 'all', savefig=False)
@@ -39,14 +39,14 @@ import modules.lib_plot_mouse_trajectory as pltlib
 
 
 '''plots multiple trajectories and REL'''
-objs = [plib.TrialData() for i in range(2)]
-objs[0].Load('2023-07-07', '85', '1')
-objs[1].Load('2023-07-07', '85', '17')
+# objs = [plib.TrialData() for i in range(2)]
+# objs[0].Load('2023-07-07', '85', '1')
+# objs[1].Load('2023-07-07', '85', '17')
 
 
-for i in objs: print('Mouse %s Trial %s'%(i.mouse_number, i.trial))
+# for i in objs: print('Mouse %s Trial %s'%(i.mouse_number, i.trial))
 
-pltlib.plot_multi_traj(objs, align_entrance=True, crop_target= True, continuous = False, savefig = True)
+# pltlib.plot_multi_traj(objs, align_entrance=True, crop_target= True, continuous = False, savefig = True)
 
 # objs = [plib.TrialData() for i in range(3)]
 # objs[0].Load('2022-08-12', '69', '1')
