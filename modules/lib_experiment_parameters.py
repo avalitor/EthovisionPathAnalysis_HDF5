@@ -424,7 +424,7 @@ def set_target(experiment, entrance, trial_condition):
         if entrance == u'NW':
             target_coords = 12.96, -37.94
     elif experiment == '2025-05-07':
-        if trial_condition.isdigit() is True and int(trial_condition) <= 45: #target A
+        if trial_condition.isdigit() is True and int(trial_condition) <= 45 or trial_condition == 'probe 1': #target A
             if entrance == u'SW':
                 target_coords = 38.09, 13.11
             if entrance == u'SE':
