@@ -23,7 +23,7 @@ import modules.config as cfg
 #%%
 '''Whole experiment import'''
 
-experiment = '2025-05-07'
+experiment = '2025-08-22'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
@@ -41,7 +41,7 @@ for f in os.listdir(os.path.join(cfg.RAW_FILE_DIR, experiment+'_Raw Trial Data')
 # experiment = '2023-10-16'
 
 exp = plib.TrialData()
-exp.Load(experiment, '*', '40') #use this trial's image as the standard
+exp.Load(experiment, '*', '21') #use this trial's image as the standard
 arena_circle, gray = phc.detect_arena_circle(os.path.join(cfg.ROOT_DIR, 'data', 'BackgroundImage', exp.bkgd_img), 
                                              mask_sensitivity=60.)
 holes = phc.detect_arena_hole_coords(arena_circle, gray)

@@ -40,4 +40,4 @@ def get_exp_info(date):
         schedule = schedule.sort_values(by=['Day', 'Mouse']).reset_index(drop=True)
     return schedule
 
-schedule = get_exp_info("2023-07-07")
+schedule = get_exp_info("2023-08-15")

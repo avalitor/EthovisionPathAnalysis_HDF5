@@ -93,6 +93,8 @@ def set_background_image(experiment, is_reverse, entrance, trial_condition):
     if experiment == '2024-11-08': background = 'BKGDimage-20241108.png'
     if experiment == '2024-11-28': background = 'BKGDimage-20241128.png'
     if experiment == '2025-05-07': background = 'BKGDimage-20250507.png'
+    if experiment == '2025-06-04': background = 'BKGDimage-20250604.png'
+    if experiment == '2025-08-22': background = 'BKGDimage-20250822.png'
     return background
 
 def get_mouse_sex(experiment, mouse):
@@ -442,6 +444,44 @@ def set_target(experiment, entrance, trial_condition):
                 target_coords = 18.66, 23.91
             if entrance == u'NW':
                 target_coords = 0,0
+    elif experiment == '2025-06-04':
+        if trial_condition.isdigit() is True and int(trial_condition) <= 21 or trial_condition == 'probe1': #target A
+            if entrance == u'SW':
+                target_coords = 37.11, 13.44
+            if entrance == u'SE':
+                target_coords = -13.44, 37.56
+            if entrance == u'NE':
+                target_coords = -38.01, -13.44
+            if entrance == u'NW':
+                target_coords = 13.28, -37.31
+        else: #Target B
+            if entrance == u'SW':
+                target_coords = -18.32, -23.82
+            if entrance == u'SE':
+                target_coords = 23.82, -17.86
+            if entrance == u'NE':
+                target_coords = 18.32, 32.97
+            if entrance == u'NW':
+                target_coords = -23.66, 18.47
+    elif experiment == '2025-08-22':
+        if trial_condition.isdigit() is True and int(trial_condition) <= 15 or trial_condition == 'probe1': #target A
+            if entrance == u'SW':
+                target_coords = -12.96, 38.52
+            if entrance == u'SE':
+                target_coords = -38.37, -12.38
+            if entrance == u'NE':
+                target_coords = 12.38, -37.76
+            if entrance == u'NW':
+                target_coords = 37.60, 13.30
+        else: #Target B
+            if entrance == u'SW':
+                target_coords = 22.78, -18.04
+            if entrance == u'SE':
+                target_coords = 18.34, 24.0
+            if entrance == u'NE':
+                target_coords = -23.85, 19.11
+            if entrance == u'NW':
+                target_coords = -18.96, -23.8
     return target_coords
 
 #sets the rotationally equivalent location of the target, only use during rotation trials
