@@ -447,22 +447,22 @@ def set_target(experiment, entrance, trial_condition):
     elif experiment == '2025-06-04':
         if trial_condition.isdigit() is True and int(trial_condition) <= 21 or trial_condition == 'probe1': #target A
             if entrance == u'SW':
-                target_coords = 37.11, 13.44
-            if entrance == u'SE':
                 target_coords = -13.44, 37.56
-            if entrance == u'NE':
+            if entrance == u'SE':
                 target_coords = -38.01, -13.44
-            if entrance == u'NW':
+            if entrance == u'NE':
                 target_coords = 13.28, -37.31
+            if entrance == u'NW':
+                target_coords = 37.11, 13.44
         else: #Target B
             if entrance == u'SW':
-                target_coords = -18.32, -23.82
-            if entrance == u'SE':
                 target_coords = 23.82, -17.86
-            if entrance == u'NE':
+            if entrance == u'SE':
                 target_coords = 18.32, 32.97
-            if entrance == u'NW':
+            if entrance == u'NE':
                 target_coords = -23.66, 18.47
+            if entrance == u'NW':
+                target_coords = -18.32, -23.82
     elif experiment == '2025-08-22':
         if trial_condition.isdigit() is True and int(trial_condition) <= 15 or trial_condition == 'probe1': #target A
             if entrance == u'SW':

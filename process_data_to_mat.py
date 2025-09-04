@@ -23,7 +23,7 @@ import modules.config as cfg
 #%%
 '''Whole experiment import'''
 
-experiment = '2025-08-22'
+experiment = '2025-06-04'
 i=1 #starts at this ethovision file
 
 #iterates over all files in experiment folder and saves as mat
