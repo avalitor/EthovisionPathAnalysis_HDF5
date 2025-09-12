@@ -458,7 +458,7 @@ def set_target(experiment, entrance, trial_condition):
             if entrance == u'SW':
                 target_coords = 23.82, -17.86
             if entrance == u'SE':
-                target_coords = 18.32, 32.97
+                target_coords = 18.17, 23.82
             if entrance == u'NE':
                 target_coords = -23.66, 18.47
             if entrance == u'NW':

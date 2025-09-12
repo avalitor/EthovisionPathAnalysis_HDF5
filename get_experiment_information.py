@@ -19,7 +19,7 @@ def list_all_exp_by_date():
 
 def get_exp_info(date):
     '''Get mouse number, trial schedule'''
-    schedule = pd.DataFrame(columns=["Mouse","Day","Trial"])
+    schedule = pd.DataFrame(columns=["Mouse","Day","Trial","Entrance"])
  
     for files in os.listdir(glob.glob(glob.glob(cfg.PROCESSED_FILE_DIR+'/'+date+'/')[0], recursive = True)[0]): #finds file path based on experiment
         d = plib.TrialData()
@@ -33,11 +33,11 @@ def get_exp_info(date):
         # schedule.loc[int(d.day)] = {"Trial": d.trial, "Mouse": d.mouse_number}
         
         # schedule = pd.concat([schedule.iloc[:d.day], line, schedule.iloc[d.day:]]).reset_index(drop=True)
-        row = [int(d.mouse_number), int(d.day), d.trial]
+        row = [int(d.mouse_number), int(d.day), d.trial, d.entrance]
         schedule.loc[len(schedule)] = row
         
         # schedule = schedule.sort_index().reset_index(drop=True)
         schedule = schedule.sort_values(by=['Day', 'Mouse']).reset_index(drop=True)
     return schedule
 
-schedule = get_exp_info("2023-08-15")
+schedule = get_exp_info("2025-06-04")
